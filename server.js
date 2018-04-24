@@ -25,15 +25,45 @@ app.use(bodyParser.json())
 
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Ver por diario
-app.get("/:collection/:type", (req, res) => {
+/*app.get("/:collection/:type", (req, res) => {
   const {
     type,
     collection
   } = req.params
 
   db.collection(collection).find({ "id": type }).toArray((err, result) => funkInter(res, err, result))
+})*/
+//--------------------------------------------------------------------------------------------GENERIX
+app.get("/:collection/:q", (req, res) => {
+  let {
+    q,
+    collection
+  } = req.params
+  console.log(q)
+  Object.keys(q).map(k => {
+    q[k] = toExp(q[k])
+  })
+
+  try {
+    q = JSON.parse(q)
+  }
+  catch (Exception) {
+    res.status(666).send("JSON no compatible, reveer.")
+    return
+  }
+
+  console.log(typeof q)
+  db.collection(collection).find(q).toArray((err, result) => funkInter(res, err, result))
 })
 
+const toExp = (clave) => {
+  if (/^\/.*\/$/.test(clave)) {
+    return new RegExp(clave)
+  }
+  else {
+    return clave
+  }
+}
 //------------------------------------------------------------------------------------------------------------Profe
 //--------------------------------------------------------------------------------------------Ver
 app.get("/:collection", (req, res) => {
@@ -87,8 +117,8 @@ app.patch("/:collection/:id", (req, res) => {
   db.collection(collection).update({
     _id: new mongodb.ObjectID(id)
   }, {
-    $set: req.body
-  }, (err, result) => funkInter(res, err, result))
+      $set: req.body
+    }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------
 
