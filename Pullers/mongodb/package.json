@@ -1,0 +1,25 @@
+{
+  "name": "mongodb_basictools",
+  "version": "1.0.0",
+  "description": "Connection, and basic use of mongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sturmenta/MongoDB_BasicTools.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sturmenta/MongoDB_BasicTools/issues"
+  },
+  "homepage": "https://github.com/sturmenta/MongoDB_BasicTools#readme",
+  "devDependencies": {
+    "eslint": "^4.18.2"
+  },
+  "dependencies": {
+    "mongodb": "^3.0.4"
+  }
+}
