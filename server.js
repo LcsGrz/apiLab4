@@ -24,46 +24,45 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 
 //------------------------------------------------------------------------------------------------------------Propios
-//--------------------------------------------------------------------------------------------Ver por diario
-/*app.get("/:collection/:type", (req, res) => {
-  const {
-    type,
-    collection
-  } = req.params
-
-  db.collection(collection).find({ "id": type }).toArray((err, result) => funkInter(res, err, result))
-})*/
 //--------------------------------------------------------------------------------------------GENERIX
-app.get("/:collection/:q", (req, res) => {
-  let {
-    q,
-    collection
-  } = req.params
-  console.log(q)
-  Object.keys(q).map(k => {
-    q[k] = toExp(q[k])
-  })
+app.get("/:collection", (req, res) => {
+  const { collection } = req.params
+  let { q } = req.query
 
   try {
     q = JSON.parse(q)
   }
   catch (Exception) {
-    res.status(666).send("JSON no compatible, reveer.")
+    res.status(666).send("JSON no compatible.")
     return
   }
 
-  console.log(typeof q)
+  Transformador(q)
+
+  console.log(q)
   db.collection(collection).find(q).toArray((err, result) => funkInter(res, err, result))
 })
 
-const toExp = (clave) => {
-  if (/^\/.*\/$/.test(clave)) {
-    return new RegExp(clave)
+function Transformador(o) {
+  /*
+  Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
+                                  eso es por que todas las claves especiales de mongo van unicas y empiezan con $
+
+  Object.keys(o)[0][0] === "$" --> clave unica empieza con $
+  */ 
+  const claves = Object.keys(o)
+  if ((claves.length === 1) && (claves[0][0] === "$")) {
+    o[claves[0]].map(x => Transformador(x))
   }
   else {
-    return clave
+    Object.keys(o).map(k => { 
+      //toDo: luego aca deberia transformar otros campos ,ej : date
+      o[k] = toExp(o[k]) 
+    })
   }
 }
+
+const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
 //------------------------------------------------------------------------------------------------------------Profe
 //--------------------------------------------------------------------------------------------Ver
 app.get("/:collection", (req, res) => {

@@ -106,7 +106,7 @@ const CrawlerPromesa = pagina => {
       $(patron).each((index, el) => {
         noticias.push({
           "id": id,
-          "Diaro": diario,
+          "Diario": diario,
           "Titulo": $(el).find(patronTitulo).text().trim(),
           "Imagen": $(el).find(patronImg).attr("src"),
           "URL": $(el).find(patronUrl).attr("href")
