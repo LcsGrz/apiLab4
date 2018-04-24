@@ -4,7 +4,7 @@ const mongodb = require("mongodb")
 const MongoClient = mongodb.MongoClient
 const app = express()
 const url = "mongodb://localhost:27017"
-const dbName = "lab401"
+const dbName = "noticiasDB"
 
 let db = ""
 
@@ -30,6 +30,12 @@ app.get("/:collection", (req, res) => {
   } = req.params
 
   db.collection(collection).find().toArray((err, result) => funkInter(res, err, result))
+})
+//--------------------------------------------------------------------------------------------Ver
+app.get("/Pullers/:type", (req, res) => {
+  const { type } = req.params
+
+  db.collection("Noticias").find({ "id" : type}).toArray((err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Ver por ID
 app.get("/:collection/:id", (req, res) => {

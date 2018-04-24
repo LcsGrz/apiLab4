@@ -41,18 +41,25 @@ const guardar = dato => {
 const diarios = {
   noticiasulp: {
     url: "http://noticias.ulp.edu.ar/php/functions/functions.php?operacion=7",
+    id: "noticiasulp",
     patron: "div.box-noticia",
     diario: "Noticias ULP",
     patronTitulo: "div#titulo-portada",
     patronImg: "div.imagen-noticia a img",
     patronUrl: "#titulo-portada a"
   },
-  diariosl: { //FALTA PATRONES
+  diariosl: {
     url: "http://eldiariodesanluis.com/",
-    patron: "h3 a.title"
+    id: "diariosl",
+    diario: "El Diario San Luis",
+    patron: ".post-news",
+    patronTitulo: "a.title",
+    patronImg: "img",
+    patronUrl: "a.title"
   },
   slinforma: {
     url: "http://www.sanluisinforma.com.ar/",
+    id: "slinforma",
     diario: "San Luis Informa",
     patron: "article",
     patronTitulo: "h2.article-title",
@@ -61,6 +68,7 @@ const diarios = {
   },
   lpsl: {
     url: "http://www.lapuntasanluis.com/",
+    id: "lpsl",
     diario: "La Punta San Luis",
     patron: "article",
     patronTitulo: "h2.article-title",
@@ -69,6 +77,7 @@ const diarios = {
   },
   sltv: {
     url: "http://sanluistv.com/",
+    id: "sltv",
     diario: "San Luis TV",
     patron: "div.td-block-span4",
     patronTitulo: "h3",
@@ -80,6 +89,7 @@ const diarios = {
 const CrawlerPromesa = pagina => {
   const {
     url,
+    id,
     diario,
     patron,
     patronTitulo,
@@ -95,6 +105,7 @@ const CrawlerPromesa = pagina => {
       const noticias = []
       $(patron).each((index, el) => {
         noticias.push({
+          "id": id,
           "Diaro": diario,
           "Titulo": $(el).find(patronTitulo).text().trim(),
           "Imagen": $(el).find(patronImg).attr("src"),
@@ -107,6 +118,7 @@ const CrawlerPromesa = pagina => {
 }
 const crawlers = [
   CrawlerPromesa("noticiasulp"),
+  CrawlerPromesa("diariosl"),
   CrawlerPromesa("slinforma"),
   CrawlerPromesa("lpsl"),
   CrawlerPromesa("sltv")
