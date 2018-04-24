@@ -23,6 +23,18 @@ app.use(bodyParser.urlencoded({
 }))
 app.use(bodyParser.json())
 
+//------------------------------------------------------------------------------------------------------------Propios
+//--------------------------------------------------------------------------------------------Ver por diario
+app.get("/:collection/:type", (req, res) => {
+  const {
+    type,
+    collection
+  } = req.params
+
+  db.collection(collection).find({ "id": type }).toArray((err, result) => funkInter(res, err, result))
+})
+
+//------------------------------------------------------------------------------------------------------------Profe
 //--------------------------------------------------------------------------------------------Ver
 app.get("/:collection", (req, res) => {
   const {
@@ -30,12 +42,6 @@ app.get("/:collection", (req, res) => {
   } = req.params
 
   db.collection(collection).find().toArray((err, result) => funkInter(res, err, result))
-})
-//--------------------------------------------------------------------------------------------Ver
-app.get("/Pullers/:type", (req, res) => {
-  const { type } = req.params
-
-  db.collection("Noticias").find({ "id" : type}).toArray((err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Ver por ID
 app.get("/:collection/:id", (req, res) => {

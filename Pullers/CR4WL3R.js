@@ -16,16 +16,16 @@ db.noticias.find().pretty()
 const guardarBD = datos => {
   datos.map(n => {
     n.map(N => {
-      mongodb.findOne("Noticias", N).then(obj => {
+      mongodb.findOne("pullers", N).then(obj => {
         if (obj === null) {
-          mongodb.insert("Noticias", N)
+          mongodb.insert("pullers", N)
             .then(doc => {
               console.log(doc.result)
             })
             .catch(err => {
               console.log(err)
             })
-        } else console.log("ya existe perrin")
+        } else console.log("La noticia ya se encuentra en la BD.")
       }).catch(err => console.log(err))
     })
   })
