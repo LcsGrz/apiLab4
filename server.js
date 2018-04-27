@@ -34,17 +34,18 @@ app.use(function (err, req, res, next) {
 });
 
 app.post('/login', (req, res) => {
+
   if (!('credentials' in req.body)) {
     res.status(500).send({erro: true, trace: "bad request"});
     return;
   }
-  db.collection('usuarios')
-    .findOne(req.body.credentials, (err, user) => {
+  const q = JSON.parse(req.body.credentials)
+  db.collection('usuarios').findOne(q, (err, result) => {
       if (err) {
         res.status(500).send({error: true, trace: err});
         return;
       }
-      const token = jwt.sign(user, secret, { expiresIn: 60 * 5 });
+      const token = jwt.sign(result, secret, { expiresIn: 60 * 5 });
       res.send({token});
     });
 });
@@ -115,7 +116,7 @@ app.put("/:collection", (req, res) => {
   const {
     collection
   } = req.params
-
+  console.log(req.body)
   db.collection(collection).insert(req.body, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Borrar
