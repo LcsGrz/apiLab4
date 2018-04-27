@@ -5,11 +5,10 @@ const MongoClient = mongodb.MongoClient
 const app = express()
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
+const jwt = require("jsonwebtoken")
+const expressJwt = require("express-jwt")
+const secret = "palabrasecreta"
 let db = ""
-
-const jwt = require('jsonwebtoken')
-const expressJwt = require('express-jwt')
-const secret="palabrasecreta"
 
 MongoClient.connect(url, (err, client) => {
   if (err) {
@@ -21,33 +20,30 @@ MongoClient.connect(url, (err, client) => {
   db = client.db(dbName)
 })
 
-app.use(bodyParser.urlencoded({
-  extended: false
-}))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-app.use('/api/', expressJwt({secret: secret}));
+app.use("/api/", expressJwt({ secret: secret }))
 
 app.use(function (err, req, res, next) {
-  if (err.name === 'UnauthorizedError') {
-    res.status(401).send({error: true, trace: 'invalid token...'});
+  if (err.name === "UnauthorizedError") {
+    res.status(401).send({ error: true, trace: "invalid token..." })
   }
-});
-
-app.post('/login', (req, res) => {
-  if (!('credentials' in req.body)) {
-    res.status(500).send({erro: true, trace: "bad request"});
-    return;
+})
+//-------------------------------------------------------------------------------------
+app.post("/login", (req, res) => {
+  if (!("credentials" in req.body)) {
+    res.status(500).send({ erro: true, trace: "bad request" })
+    return
   }
-  db.collection('usuarios')
-    .findOne(req.body.credentials, (err, user) => {
-      if (err) {
-        res.status(500).send({error: true, trace: err});
-        return;
-      }
-      const token = jwt.sign(user, secret, { expiresIn: 60 * 5 });
-      res.send({token});
-    });
-});
+  db.collection("usuarios").findOne(req.body.credentials, (err, user) => {
+    if (err) {
+      res.status(500).send({ error: true, trace: err })
+      return
+    }
+    const token = jwt.sign(user, secret, { expiresIn: 60 * 5 })
+    res.send({ token })
+  })
+})
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------GENERIX
 app.get("/:collection", (req, res) => {
