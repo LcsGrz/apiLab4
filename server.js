@@ -3,6 +3,7 @@ const bodyParser = require("body-parser")
 const mongodb = require("mongodb")
 const MongoClient = mongodb.MongoClient
 const app = express()
+
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
 const jwt = require("jsonwebtoken")
@@ -15,7 +16,6 @@ MongoClient.connect(url, (err, client) => {
     console.log(err)
     return err
   }
-
   console.log("Connected successfully to server")
   db = client.db(dbName)
 })
@@ -35,11 +35,9 @@ app.use(function (err, req, res, next) {
     })
   }
 })
-/*
-curl -d {"credentials": "{"user ":"julio ","password ":"gay "}} -H "Content-Type:application/json " -X POST http://localhost:3000/login
-*/
+
 app.post("/login", (req, res) => {
-  console.log(req.body)
+  //console.log("BODY: " + req.body.credentials)
   if (!("credentials" in req.body)) {
     res.status(500).send({
       erro: true,
@@ -47,10 +45,11 @@ app.post("/login", (req, res) => {
     })
     return
   }
+  console.log("CREDENCIALES: " + req.body.credentials)
   /*var str = req.body.credentials.replace(/'/g, "\"")
-  const q = JSON.parse(str)*/
-  const q = JSON.parse(req.body.credentials)
-  db.collection("usuarios").findOne(q, (err, result) => {
+  var obj = JSON.parse(str)*/
+  var obj = JSON.parse(req.body.credentials)
+  db.collection("usuarios").findOne(obj, (err, result) => {
     if (err) {
       res.status(500).send({
         error: true,
@@ -61,6 +60,7 @@ app.post("/login", (req, res) => {
     const token = jwt.sign(result, secret, {
       expiresIn: 60 * 5
     })
+    console.log(result)
     res.send({
       token
     })
@@ -68,7 +68,7 @@ app.post("/login", (req, res) => {
 })
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------GENERIX
-app.get("/:collection", (req, res) => {
+app.get("/api/:collection", (req, res) => {
   const {
     collection
   } = req.params
@@ -110,7 +110,7 @@ function Transformador(o) {
 const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
 //------------------------------------------------------------------------------------------------------------Profe
 //--------------------------------------------------------------------------------------------Ver
-app.get("/:collection", (req, res) => {
+app.get("/api/:collection", (req, res) => {
   const {
     collection
   } = req.params
@@ -118,7 +118,7 @@ app.get("/:collection", (req, res) => {
   db.collection(collection).find().toArray((err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Ver por ID
-app.get("/:collection/:id", (req, res) => {
+app.get("/api/:collection/:id", (req, res) => {
 
   const {
     id,
@@ -130,8 +130,8 @@ app.get("/:collection/:id", (req, res) => {
   }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Insertar
-app.put("/:collection", (req, res) => {
-
+app.put("/api/:collection", (req, res) => {
+  console.log(req.params)
   const {
     collection
   } = req.params
@@ -139,7 +139,7 @@ app.put("/:collection", (req, res) => {
   db.collection(collection).insert(req.body, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Borrar
-app.delete("/:collection/:id", (req, res) => {
+app.delete("/api/:collection/:id", (req, res) => {
 
   const {
     id,
@@ -151,7 +151,7 @@ app.delete("/:collection/:id", (req, res) => {
   }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Actualizar
-app.patch("/:collection/:id", (req, res) => {
+app.patch("/api/:collection/:id", (req, res) => {
 
   const {
     id,
