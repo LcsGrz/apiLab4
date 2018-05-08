@@ -3,6 +3,7 @@ const bodyParser = require("body-parser")
 const mongodb = require("mongodb")
 const MongoClient = mongodb.MongoClient
 const app = express()
+
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
 let db = ""
@@ -16,7 +17,6 @@ MongoClient.connect(url, (err, client) => {
     console.log(err)
     return err
   }
-
   console.log("Connected successfully to server")
   db = client.db(dbName)
 })
@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
+
 app.use('/api/', expressJwt({secret: secret}));
 
 app.use(function (err, req, res, next) {
@@ -33,19 +34,27 @@ app.use(function (err, req, res, next) {
   }
 });
 
-app.post('/login', (req, res) => {
-
+app.post("/login", (req, res) => {
+  //const query = { user , password } = req.body
   if (!('credentials' in req.body)) {
-    res.status(500).send({erro: true, trace: "bad request"});
+    res.status(500).send({erro: true, trace: "bad request"});    
     return;
-  }
-  const q = JSON.parse(req.body.credentials)
-  db.collection('usuarios').findOne(q, (err, result) => {
+  }  
+  console.log(req.body.credentials)
+  var str = req.body.credentials.replace(/'/g, "\"")
+  //str = "'"+str+"'"
+  var obj = JSON.parse(str)
+  
+  db.collection('usuarios').findOne(obj, (err, result) => {
       if (err) {
         res.status(500).send({error: true, trace: err});
         return;
       }
       const token = jwt.sign(result, secret, { expiresIn: 60 * 5 });
+      //--------------------------
+      console.log(result)
+      // console.log("nada puede malir sal")
+      //--------------------------
       res.send({token});
     });
 });
@@ -91,7 +100,7 @@ function Transformador(o) {
 const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
 //------------------------------------------------------------------------------------------------------------Profe
 //--------------------------------------------------------------------------------------------Ver
-app.get("/:collection", (req, res) => {
+app.get("/api/:collection", (req, res) => {
   const {
     collection
   } = req.params
@@ -99,7 +108,7 @@ app.get("/:collection", (req, res) => {
   db.collection(collection).find().toArray((err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Ver por ID
-app.get("/:collection/:id", (req, res) => {
+app.get("/api/:collection/:id", (req, res) => {
 
   const {
     id,
@@ -111,8 +120,8 @@ app.get("/:collection/:id", (req, res) => {
   }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Insertar
-app.put("/:collection", (req, res) => {
-
+app.put("/api/:collection", (req, res) => {
+  console.log(req.params)
   const {
     collection
   } = req.params
@@ -120,7 +129,7 @@ app.put("/:collection", (req, res) => {
   db.collection(collection).insert(req.body, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Borrar
-app.delete("/:collection/:id", (req, res) => {
+app.delete("/api/:collection/:id", (req, res) => {
 
   const {
     id,
@@ -132,7 +141,7 @@ app.delete("/:collection/:id", (req, res) => {
   }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Actualizar
-app.patch("/:collection/:id", (req, res) => {
+app.patch("/api/:collection/:id", (req, res) => {
 
   const {
     id,
