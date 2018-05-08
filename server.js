@@ -24,6 +24,7 @@ MongoClient.connect(url, (err, client) => {
 app.use(bodyParser.urlencoded({
   extended: false
 }))
+
 app.use(bodyParser.json())
 
 app.use('/api/', expressJwt({secret: secret}));
@@ -35,15 +36,14 @@ app.use(function (err, req, res, next) {
 });
 
 app.post("/login", (req, res) => {
-  //const query = { user , password } = req.body
   if (!('credentials' in req.body)) {
     res.status(500).send({erro: true, trace: "bad request"});    
     return;
   }  
+
+  //var str = req.body.credentials.replace(/'/g, "\"")
   console.log(req.body.credentials)
-  var str = req.body.credentials.replace(/'/g, "\"")
-  //str = "'"+str+"'"
-  var obj = JSON.parse(str)
+  var obj = JSON.parse(req.body.credentials)
   
   db.collection('usuarios').findOne(obj, (err, result) => {
       if (err) {
@@ -52,7 +52,6 @@ app.post("/login", (req, res) => {
       }
       const token = jwt.sign(result, secret, { expiresIn: 60 * 5 });
       //--------------------------
-      console.log(result)
       // console.log("nada puede malir sal")
       //--------------------------
       res.send({token});
@@ -164,4 +163,4 @@ const funkInter = (res, err, result) => {
   res.send(result)
 }
 
-app.listen(3000, () => console.log("listo en 3000..."))
+app.listen(3000, "0.0.0.0",() => console.log("listo en 3000..."))
