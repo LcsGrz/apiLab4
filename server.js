@@ -35,18 +35,13 @@ app.use(function (err, req, res, next) {
 });
 
 app.post("/login", (req, res) => {
-  //const query = { user , password } = req.body
   if (!('credentials' in req.body)) {
-    res.status(500).send({erro: true, trace: "bad request"});    
+    res.status(500).send({erro: true, trace: "bad request"});
     return;
-  }  
-  console.log(req.body.credentials)
-  var str = req.body.credentials.replace(/'/g, "\"")
-  //str = "'"+str+"'"
-  var obj = JSON.parse(str)
-  
-  db.collection('usuarios').findOne(obj, (err, result) => {
-      if (err) {
+  }
+
+  db.collection('usuarios').findOne(req.body.credentials, (err, result) => {
+      if (err || result === null) {
         res.status(500).send({error: true, trace: err});
         return;
       }
