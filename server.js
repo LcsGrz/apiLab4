@@ -19,6 +19,11 @@ MongoClient.connect(url, (err, client) => {
   console.log("Connected successfully to server")
   db = client.db(dbName)
   db.collection("roles").find().toArray((err, result) => {
+    console.log("trayendo roles: ", result)
+    if (result.length === 0) {
+      console.log("ERROR: roles vacios")
+      process.exit(1)
+    }
     result.map((x) => {
       roles[x.nombre] = x.permisos
     })
@@ -35,7 +40,8 @@ app.use("/api/", expressJwt({
 app.use((req, res, next) => {
   console.log(req.user)
   console.log("estoy en middleware")
-  console.log(roles["admin"][0]["noticias"]["insert"])
+
+  //console.log(roles["admin"][0]["noticias"]["insert"])
   //  console.log(roles[req.user.'rol])
   next()
 })
@@ -57,7 +63,8 @@ app.post("/login", (req, res) => {
     })
     return
   }
-
+  console.log(req.body)
+  console.log(typeof req.body)
   db.collection("usuarios").findOne(req.body.credentials, (err, result) => {
     if (err || result === null) {
       res.status(500).send({
