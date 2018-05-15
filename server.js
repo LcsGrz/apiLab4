@@ -3,6 +3,7 @@ const bodyParser = require("body-parser")
 const mongodb = require("mongodb")
 const MongoClient = mongodb.MongoClient
 const app = express()
+const bcrypt = require('bcryptjs');
 
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
@@ -19,16 +20,26 @@ MongoClient.connect(url, (err, client) => {
   }
   console.log("Connected successfully to server")
   db = client.db(dbName)
+<<<<<<< HEAD
   db.collection("roles").findOne({}, (err, result) => { roles = result })
+=======
+  // db.collection("roles").find().toArray((err, result) => {
+  //   result.map((x) => {
+  //     roles[x.nombre] = x.permisos
+  //   })
+  // })
+>>>>>>> fef9b53f2be5a4c9c2a1f09fbc6a1e7f0092766d
 })
 
 app.use(bodyParser.urlencoded({
   extended: false
 }))
+
 app.use(bodyParser.json())
 app.use("/api/", expressJwt({
   secret: secret
 }))
+<<<<<<< HEAD
 
 
 
@@ -55,6 +66,14 @@ app.use("/api/:collection", (req, res, next) => {
       trace: "Algo anda mal, expiro su token, o la colleccion no existe."
     })
   }
+=======
+app.use((req, res, next) => {
+  console.log(req.user)
+  console.log("estoy en middleware")
+  //console.log(roles["admin"][0]["noticias"]["insert"])
+  //  console.log(roles[req.user.'rol])
+  next()
+>>>>>>> fef9b53f2be5a4c9c2a1f09fbc6a1e7f0092766d
 })
 
 
@@ -67,9 +86,9 @@ app.use((err, req, res, next) => {
       trace: "invalid token..."
     })
   }
-})
-
+});
 app.post("/login", (req, res) => {
+<<<<<<< HEAD
   if (!("credentials" in req.body)) {
     res.status(500).send({
       error: true,
@@ -92,6 +111,41 @@ app.post("/login", (req, res) => {
     res.send({
       token
     })
+=======
+  if (!('credentials' in req.body)) {
+    res.status(500).send({erro: true, trace: "bad request"});
+    return;
+  }  
+
+  const q = JSON.parse("{\"user\":\""+req.body.credentials.user+"\"}")
+  
+  db.collection('usuarios').findOne(q, (err, result) => {
+      if (err || result === null) {
+        res.status(500).send({error: true, trace: err});
+        return;
+      }
+      // console.log(result.password)
+      var passwordIsValid = bcrypt.compareSync(req.body.credentials.password, result.password);
+      if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
+
+      const token = jwt.sign(result, secret, { expiresIn: 60 * 60 }); 
+      res.status(200).send({ auth: true, token: token });
+    });
+});
+app.post('/register', function(req, res) {
+  if (!('credentials' in req.body)) {
+    res.status(500).send({erro: true, trace: "bad request"});
+    return;
+  }  
+  req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8);
+  db.collection('usuarios').insert(req.body.credentials,(err,result)=>{
+    if (err || result === null) {
+      res.status(500).send({error: true, trace: err});
+      return;
+    }    
+    const token = jwt.sign(result, secret, { expiresIn: 60 * 60 }); 
+    res.status(200).send({ auth: true, token: token });
+>>>>>>> fef9b53f2be5a4c9c2a1f09fbc6a1e7f0092766d
   })
 })
 //------------------------------------------------------------------------------------------------------------Propios
@@ -112,7 +166,7 @@ app.get("/api/:collection", (req, res) => {
       trace: "JSON no compatible."})
     return
   }
-
+  
   Transformador(q)
   db.collection(collection).find(q).toArray((err, result) => funkInter(res, err, result))
 })
@@ -159,11 +213,9 @@ app.get("/api/:collection/:id", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Insertar
 app.put("/api/:collection", (req, res) => {
-  console.log(req.params)
   const {
     collection
   } = req.params
-  console.log(req.body)
   db.collection(collection).insert(req.body, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Borrar
