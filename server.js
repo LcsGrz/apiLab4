@@ -3,6 +3,7 @@ const bodyParser = require("body-parser")
 const mongodb = require("mongodb")
 const MongoClient = mongodb.MongoClient
 const app = express()
+const bcrypt = require('bcryptjs');
 
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
@@ -34,29 +35,42 @@ app.use(function (err, req, res, next) {
     res.status(401).send({error: true, trace: 'invalid token...'});
   }
 });
-
 app.post("/login", (req, res) => {
   if (!('credentials' in req.body)) {
-    res.status(500).send({erro: true, trace: "bad request"});    
+    res.status(500).send({erro: true, trace: "bad request"});
     return;
   }  
 
-  //var str = req.body.credentials.replace(/'/g, "\"")
-  console.log(req.body.credentials)
-  var obj = JSON.parse(req.body.credentials)
+  const q = JSON.parse("{\"user\":\""+req.body.credentials.user+"\"}")
   
-  db.collection('usuarios').findOne(obj, (err, result) => {
-      if (err) {
+  db.collection('usuarios').findOne(q, (err, result) => {
+      if (err || result === null) {
         res.status(500).send({error: true, trace: err});
         return;
       }
-      const token = jwt.sign(result, secret, { expiresIn: 60 * 5 });
-      //--------------------------
-      // console.log("nada puede malir sal")
-      //--------------------------
-      res.send({token});
+      // console.log(result.password)
+      var passwordIsValid = bcrypt.compareSync(req.body.credentials.password, result.password);
+      if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
+
+      const token = jwt.sign(result, secret, { expiresIn: 60 * 60 }); 
+      res.status(200).send({ auth: true, token: token });
     });
 });
+app.post('/register', function(req, res) {
+  if (!('credentials' in req.body)) {
+    res.status(500).send({erro: true, trace: "bad request"});
+    return;
+  }  
+  req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8);
+  db.collection('usuarios').insert(req.body.credentials,(err,result)=>{
+    if (err || result === null) {
+      res.status(500).send({error: true, trace: err});
+      return;
+    }    
+    const token = jwt.sign(result, secret, { expiresIn: 60 * 60 }); 
+    res.status(200).send({ auth: true, token: token });
+  })
+})
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------GENERIX
 app.get("/api/:collection", (req, res) => {
@@ -70,10 +84,10 @@ app.get("/api/:collection", (req, res) => {
     res.status(666).send("JSON no compatible.")
     return
   }
-
+  
   Transformador(q)
 
-  console.log(q)
+  //console.log(q)
   db.collection(collection).find(q).toArray((err, result) => funkInter(res, err, result))
 })
 
@@ -120,11 +134,9 @@ app.get("/api/:collection/:id", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Insertar
 app.put("/api/:collection", (req, res) => {
-  console.log(req.params)
   const {
     collection
   } = req.params
-  console.log(req.body)
   db.collection(collection).insert(req.body, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Borrar
