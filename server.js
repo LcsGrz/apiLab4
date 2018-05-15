@@ -11,7 +11,7 @@ const secret = "palabrasecreta"
 let db = ""
 let roles
 let collection
-
+//------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
   if (err) {
     console.log(err)
@@ -32,7 +32,7 @@ MongoClient.connect(url, (err, client) => {
   })*/
   db.collection("roles").findOne({}, (err, result) => { roles = result })
 })
-
+//------------------------------------------------------------------------------------------------------------MIDDLEWARES
 app.use(bodyParser.urlencoded({
   extended: false
 }))
@@ -76,8 +76,8 @@ app.use((req, res, next) => {
   }
   next()
 })
-
-
+//------------------------------------------------------------------------------------------------------------Propios
+//--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res) => {
   if (!("credentials" in req.body)) {
     res.status(500).send({
@@ -104,8 +104,7 @@ app.post("/login", (req, res) => {
     })
   })
 })
-//------------------------------------------------------------------------------------------------------------Propios
-//--------------------------------------------------------------------------------------------GENERIX
+//--------------------------------------------------------------------------------------------Ver
 app.get("/api/:collection", (req, res) => {
   let {
     q
@@ -145,10 +144,6 @@ function Transformador(o) {
 
 const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
 //------------------------------------------------------------------------------------------------------------Profe
-//--------------------------------------------------------------------------------------------Ver
-app.get("/api/:collection", (req, res) => {
-  db.collection(req.params.collection).find().toArray((err, result) => funkInter(res, err, result))
-})
 //--------------------------------------------------------------------------------------------Ver por ID
 app.get("/api/:collection/:id", (req, res) => {
   const {
