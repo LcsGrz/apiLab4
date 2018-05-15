@@ -7,12 +7,11 @@ const bcrypt = require('bcryptjs');
 
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
+const jwt = require("jsonwebtoken")
+const expressJwt = require("express-jwt")
+const secret = "palabrasecreta"
 let db = ""
-
-const jwt = require('jsonwebtoken')
-const expressJwt = require('express-jwt')
-const secret="palabrasecreta"
-
+let roles = []
 MongoClient.connect(url, (err, client) => {
   if (err) {
     console.log(err)
@@ -20,6 +19,11 @@ MongoClient.connect(url, (err, client) => {
   }
   console.log("Connected successfully to server")
   db = client.db(dbName)
+  // db.collection("roles").find().toArray((err, result) => {
+  //   result.map((x) => {
+  //     roles[x.nombre] = x.permisos
+  //   })
+  // })
 })
 
 app.use(bodyParser.urlencoded({
@@ -27,12 +31,23 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.use(bodyParser.json())
+app.use("/api/", expressJwt({
+  secret: secret
+}))
+app.use((req, res, next) => {
+  console.log(req.user)
+  console.log("estoy en middleware")
+  //console.log(roles["admin"][0]["noticias"]["insert"])
+  //  console.log(roles[req.user.'rol])
+  next()
+})
 
-app.use('/api/', expressJwt({secret: secret}));
-
-app.use(function (err, req, res, next) {
-  if (err.name === 'UnauthorizedError') {
-    res.status(401).send({error: true, trace: 'invalid token...'});
+app.use((err, req, res, next) => {
+  if (err.name === "UnauthorizedError") {
+    res.status(401).send({
+      error: true,
+      trace: "invalid token..."
+    })
   }
 });
 app.post("/login", (req, res) => {
@@ -74,15 +89,24 @@ app.post('/register', function(req, res) {
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------GENERIX
 app.get("/api/:collection", (req, res) => {
-  const { collection } = req.params
-  let { q } = req.query
+  const {
+    collection
+  } = req.params
+  let {
+    q
+  } = req.query
 
   try {
-    q = JSON.parse(q)
-  }
-  catch (Exception) {
+    if (q === null) {
+      q = {}
+    } else {
+      q = JSON.parse(q)
+    }
+
+  } catch (Exception) {
     res.status(666).send("JSON no compatible.")
     return
+
   }
   
   Transformador(q)
@@ -101,8 +125,7 @@ function Transformador(o) {
   const claves = Object.keys(o)
   if ((claves.length === 1) && (claves[0][0] === "$")) {
     o[claves[0]].map(x => Transformador(x))
-  }
-  else {
+  } else {
     Object.keys(o).map(k => {
       //toDo: luego aca deberia transformar otros campos ,ej : date
       o[k] = toExp(o[k])
@@ -162,17 +185,16 @@ app.patch("/api/:collection/:id", (req, res) => {
   db.collection(collection).update({
     _id: new mongodb.ObjectID(id)
   }, {
-      $set: req.body
-    }, (err, result) => funkInter(res, err, result))
+    $set: req.body
+  }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------
-
 const funkInter = (res, err, result) => {
   if (err) {
     res.status(500).send(err)
     return
   }
   res.send(result)
-}
+} // Funcion que mas ser repite
 
-app.listen(3000, "0.0.0.0",() => console.log("listo en 3000..."))
+app.listen(3000, () => console.log("listo en 3000..."))
