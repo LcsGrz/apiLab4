@@ -10,7 +10,8 @@ const jwt = require("jsonwebtoken")
 const expressJwt = require("express-jwt")
 const secret = "palabrasecreta"
 let db = ""
-let roles = []
+let roles
+
 MongoClient.connect(url, (err, client) => {
   if (err) {
     console.log(err)
@@ -18,11 +19,7 @@ MongoClient.connect(url, (err, client) => {
   }
   console.log("Connected successfully to server")
   db = client.db(dbName)
-  db.collection("roles").find().toArray((err, result) => {
-    result.map((x) => {
-      roles[x.nombre] = x.permisos
-    })
-  })
+  db.collection("roles").findOne({}, (err, result) => { roles = result })
 })
 
 app.use(bodyParser.urlencoded({
@@ -32,13 +29,36 @@ app.use(bodyParser.json())
 app.use("/api/", expressJwt({
   secret: secret
 }))
-app.use((req, res, next) => {
-  console.log(req.user)
-  console.log("estoy en middleware")
-  console.log(roles["admin"][0]["noticias"]["insert"])
-  //  console.log(roles[req.user.'rol])
-  next()
+
+
+
+
+app.use("/api/:collection", (req, res, next) => {
+  const { collection } = req.params
+  let userRol = req.user.rol
+
+  console.log(roles[userRol][collection])
+  if (roles[userRol][collection] !== undefined && req.user !== undefined) {
+    if (roles[userRol][collection][req.method])
+      next()
+    else {
+      res.status(500).send({
+        error: true,
+        trace: "No cuentas con los permisos suficientes."
+      })
+      return
+    }
+  }
+  else {
+    res.status(420).send({
+      error: true,
+      trace: "Algo anda mal, expiro su token, o la colleccion no existe."
+    })
+  }
 })
+
+
+
 
 app.use((err, req, res, next) => {
   if (err.name === "UnauthorizedError") {
@@ -52,7 +72,7 @@ app.use((err, req, res, next) => {
 app.post("/login", (req, res) => {
   if (!("credentials" in req.body)) {
     res.status(500).send({
-      erro: true,
+      error: true,
       trace: "bad request"
     })
     return
@@ -67,7 +87,7 @@ app.post("/login", (req, res) => {
       return
     }
     const token = jwt.sign(result, secret, {
-      expiresIn: 60 * 60
+      expiresIn: 60 * 60 * 5
     })
     res.send({
       token
@@ -85,21 +105,15 @@ app.get("/api/:collection", (req, res) => {
   } = req.query
 
   try {
-    if (q === null) {
-      q = {}
-    } else {
-      q = JSON.parse(q)
-    }
-
+    q = (q === undefined) ? {} : JSON.parse(q)
   } catch (Exception) {
-    res.status(666).send("JSON no compatible.")
+    res.status(666).send({
+      error: true,
+      trace: "JSON no compatible."})
     return
-
   }
 
   Transformador(q)
-
-  //console.log(q)
   db.collection(collection).find(q).toArray((err, result) => funkInter(res, err, result))
 })
 
@@ -175,8 +189,8 @@ app.patch("/api/:collection/:id", (req, res) => {
   db.collection(collection).update({
     _id: new mongodb.ObjectID(id)
   }, {
-    $set: req.body
-  }, (err, result) => funkInter(res, err, result))
+      $set: req.body
+    }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------
 const funkInter = (res, err, result) => {
