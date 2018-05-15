@@ -3,14 +3,15 @@ const bodyParser = require("body-parser")
 const mongodb = require("mongodb")
 const MongoClient = mongodb.MongoClient
 const app = express()
-
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
 const jwt = require("jsonwebtoken")
 const expressJwt = require("express-jwt")
 const secret = "palabrasecreta"
 let db = ""
-let roles = []
+let roles
+let collection
+
 MongoClient.connect(url, (err, client) => {
   if (err) {
     console.log(err)
@@ -18,7 +19,8 @@ MongoClient.connect(url, (err, client) => {
   }
   console.log("Connected successfully to server")
   db = client.db(dbName)
-  db.collection("roles").find().toArray((err, result) => {
+
+  /*db.collection("roles").find().toArray((err, result) => {
     console.log("trayendo roles: ", result)
     if (result.length === 0) {
       console.log("ERROR: roles vacios")
@@ -27,25 +29,14 @@ MongoClient.connect(url, (err, client) => {
     result.map((x) => {
       roles[x.nombre] = x.permisos
     })
-  })
+  })*/
+  db.collection("roles").findOne({}, (err, result) => { roles = result })
 })
 
 app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
-app.use("/api/", expressJwt({
-  secret: secret
-}))
-app.use((req, res, next) => {
-  console.log(req.user)
-  console.log("estoy en middleware")
-
-  //console.log(roles["admin"][0]["noticias"]["insert"])
-  //  console.log(roles[req.user.'rol])
-  next()
-})
-
 app.use((err, req, res, next) => {
   if (err.name === "UnauthorizedError") {
     res.status(401).send({
@@ -55,10 +46,42 @@ app.use((err, req, res, next) => {
   }
 })
 
+app.use("/api/", expressJwt({
+  secret: secret
+}))
+
+app.use("/api/:collection/:id", (req, res, next) => {
+  collection = req.params.collection
+  next()
+})
+app.use("/api/:collection", (req, res, next) => {
+  collection = req.params.collection
+  next()
+})
+app.use((req, res, next) => {
+  console.log("entre al middleware")
+  if (roles[req.user.rol][collection] === undefined && req.user === undefined) {
+    res.status(420).send({
+      error: true,
+      trace: "Algo anda mal, expiro su token, o la colleccion no existe."
+    })
+    return
+  }
+  else if (!roles[req.user.rol][collection][req.method]) {
+    res.status(500).send({
+      error: true,
+      trace: "No cuentas con los permisos suficientes."
+    })
+    return
+  }
+  next()
+})
+
+
 app.post("/login", (req, res) => {
   if (!("credentials" in req.body)) {
     res.status(500).send({
-      erro: true,
+      error: true,
       trace: "bad request"
     })
     return
@@ -74,7 +97,7 @@ app.post("/login", (req, res) => {
       return
     }
     const token = jwt.sign(result, secret, {
-      expiresIn: 60 * 60
+      expiresIn: 60 * 60 * 5
     })
     res.send({
       token
@@ -84,30 +107,22 @@ app.post("/login", (req, res) => {
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------GENERIX
 app.get("/api/:collection", (req, res) => {
-  const {
-    collection
-  } = req.params
   let {
     q
   } = req.query
 
   try {
-    if (q === null) {
-      q = {}
-    } else {
-      q = JSON.parse(q)
-    }
-
+    q = (q === undefined) ? {} : JSON.parse(q)
   } catch (Exception) {
-    res.status(666).send("JSON no compatible.")
+    res.status(666).send({
+      error: true,
+      trace: "JSON no compatible."
+    })
     return
-
   }
 
   Transformador(q)
-
-  //console.log(q)
-  db.collection(collection).find(q).toArray((err, result) => funkInter(res, err, result))
+  db.collection(req.params.collection).find(q).toArray((err, result) => funkInter(res, err, result))
 })
 
 function Transformador(o) {
@@ -132,15 +147,10 @@ const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, 
 //------------------------------------------------------------------------------------------------------------Profe
 //--------------------------------------------------------------------------------------------Ver
 app.get("/api/:collection", (req, res) => {
-  const {
-    collection
-  } = req.params
-
-  db.collection(collection).find().toArray((err, result) => funkInter(res, err, result))
+  db.collection(req.params.collection).find().toArray((err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Ver por ID
 app.get("/api/:collection/:id", (req, res) => {
-
   const {
     id,
     collection
@@ -152,16 +162,10 @@ app.get("/api/:collection/:id", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Insertar
 app.put("/api/:collection", (req, res) => {
-  console.log(req.params)
-  const {
-    collection
-  } = req.params
-  console.log(req.body)
-  db.collection(collection).insert(req.body, (err, result) => funkInter(res, err, result))
+  db.collection(req.params.collection).insert(req.body, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Borrar
 app.delete("/api/:collection/:id", (req, res) => {
-
   const {
     id,
     collection
@@ -173,7 +177,6 @@ app.delete("/api/:collection/:id", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Actualizar
 app.patch("/api/:collection/:id", (req, res) => {
-
   const {
     id,
     collection
@@ -188,7 +191,10 @@ app.patch("/api/:collection/:id", (req, res) => {
 //--------------------------------------------------------------------------------------------
 const funkInter = (res, err, result) => {
   if (err) {
-    res.status(500).send(err)
+    res.status(500).send({
+      error: true,
+      trace: err
+    })
     return
   }
   res.send(result)
