@@ -20,9 +20,24 @@ MongoClient.connect(url, (err, client) => {
   }
   console.log("Connected successfully to server")
   db = client.db(dbName)
+<<<<<<< HEAD
   db.collection("roles").findOne({}, (err, result) => {
     roles = result
   })
+=======
+
+  /*db.collection("roles").find().toArray((err, result) => {
+    console.log("trayendo roles: ", result)
+    if (result.length === 0) {
+      console.log("ERROR: roles vacios")
+      process.exit(1)
+    }
+    result.map((x) => {
+      roles[x.nombre] = x.permisos
+    })
+  })*/
+  db.collection("roles").findOne({}, (err, result) => { roles = result })
+>>>>>>> 5ba7a2af40c8fff4abf867f387b4ae7cb45cef1f
 })
 //------------------------------------------------------------------------------------------------------------MIDDLEWARES
 app.use(bodyParser.urlencoded({
@@ -84,10 +99,16 @@ app.post("/login", (req, res) => {
     })
     return
   }
+<<<<<<< HEAD
 
   const q = JSON.parse("{\"user\":\"" + req.body.credentials.user + "\"}")
 
   db.collection("usuarios").findOne(q, (err, result) => {
+=======
+  console.log(req.body)
+  console.log(typeof req.body)
+  db.collection("usuarios").findOne(req.body.credentials, (err, result) => {
+>>>>>>> 5ba7a2af40c8fff4abf867f387b4ae7cb45cef1f
     if (err || result === null) {
       res.status(500).send({
         error: true,
