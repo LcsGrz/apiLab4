@@ -1,13 +1,13 @@
-const express = require("express")
 const bodyParser = require("body-parser")
+const expressJwt = require("express-jwt")
+const jwt = require("jsonwebtoken")
+const express = require("express")
 const mongodb = require("mongodb")
-const MongoClient = mongodb.MongoClient
 const bcrypt = require("bcryptjs")
 const app = express()
+const MongoClient = mongodb.MongoClient
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
-const jwt = require("jsonwebtoken")
-const expressJwt = require("express-jwt")
 const secret = "palabrasecreta"
 let db = ""
 let roles
