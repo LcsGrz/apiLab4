@@ -2,6 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const mongodb = require("mongodb")
 const MongoClient = mongodb.MongoClient
+const bcrypt = require("bcryptjs")
 const app = express()
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
@@ -19,7 +20,9 @@ MongoClient.connect(url, (err, client) => {
   }
   console.log("Connected successfully to server")
   db = client.db(dbName)
-  db.collection("roles").findOne({}, (err, result) => { roles = result })
+  db.collection("roles").findOne({}, (err, result) => {
+    roles = result
+  })
 })
 //------------------------------------------------------------------------------------------------------------MIDDLEWARES
 app.use(bodyParser.urlencoded({
@@ -38,7 +41,10 @@ app.use((err, req, res, next) => {
 app.use("/api/", expressJwt({
   secret: secret
 }))
-
+app.use("/:collection", (req, res, next) => {
+  collection = req.params.collection
+  next()
+})
 app.use("/api/:collection/:id", (req, res, next) => {
   collection = req.params.collection
   next()
@@ -47,21 +53,24 @@ app.use("/api/:collection", (req, res, next) => {
   collection = req.params.collection
   next()
 })
+
 app.use((req, res, next) => {
-  console.log("entre al middleware")
-  if (roles[req.user.rol][collection] === undefined && req.user === undefined) {
-    res.status(420).send({
-      error: true,
-      trace: "Algo anda mal, expiro su token, o la colleccion no existe."
-    })
-    return
-  }
-  else if (!roles[req.user.rol][collection][req.method]) {
-    res.status(500).send({
-      error: true,
-      trace: "No cuentas con los permisos suficientes."
-    })
-    return
+  console.log(collection)
+  if (collection !== "register" && collection !== "login") {
+    console.log("entre al middleware")
+    if (req.user === undefined || roles[req.user.rol][collection] === undefined) {
+      res.status(420).send({
+        error: true,
+        trace: "Algo anda mal, expiro su token, o la colleccion no existe."
+      })
+      return
+    } else if (!roles[req.user.rol][collection][req.method]) {
+      res.status(500).send({
+        error: true,
+        trace: "No cuentas con los permisos suficientes."
+      })
+      return
+    }
   }
   next()
 })
@@ -70,13 +79,15 @@ app.use((req, res, next) => {
 app.post("/login", (req, res) => {
   if (!("credentials" in req.body)) {
     res.status(500).send({
-      error: true,
+      erro: true,
       trace: "bad request"
     })
     return
   }
 
-  db.collection("usuarios").findOne(req.body.credentials, (err, result) => {
+  const q = JSON.parse("{\"user\":\"" + req.body.credentials.user + "\"}")
+
+  db.collection("usuarios").findOne(q, (err, result) => {
     if (err || result === null) {
       res.status(500).send({
         error: true,
@@ -84,14 +95,45 @@ app.post("/login", (req, res) => {
       })
       return
     }
-    const token = jwt.sign(result, secret, {
-      expiresIn: 60 * 60 * 5
+    let passwordIsValid = bcrypt.compareSync(req.body.credentials.password, result.password)
+    if (!passwordIsValid) return res.status(401).send({
+      auth: false,
+      token: null
     })
-    res.send({
-      token
-    })
+
+    CrearToken(result, 3600, res)
   })
 })
+//--------------------------------------------------------------------------------------------Registrar
+app.post("/register", function (req, res) {
+  if (!("credentials" in req.body)) {
+    res.status(500).send({
+      erro: true,
+      trace: "bad request"
+    })
+    return
+  }
+  req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8)
+  db.collection("usuarios").insert(req.body.credentials, (err, result) => {
+    if (err || result === null) {
+      res.status(500).send({
+        error: true,
+        trace: err
+      })
+      return
+    }
+    CrearToken(result, 3600, res)
+  })
+})
+
+const CrearToken = (result, tiempo, res) => {
+  const token = jwt.sign(result, secret, {
+    expiresIn: tiempo
+  })
+  res.send({
+    token
+  })
+}
 //--------------------------------------------------------------------------------------------Ver
 app.get("/api/:collection", (req, res) => {
   let {
@@ -113,19 +155,16 @@ app.get("/api/:collection", (req, res) => {
 })
 
 function Transformador(o) {
-  /*
-  Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
+  /* Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
                                   eso es por que todas las claves especiales de mongo van unicas y empiezan con $
 
-  Object.keys(o)[0][0] === "$" --> clave unica empieza con $
-  */
+  Object.keys(o)[0][0] === "$" --> clave unica empieza con $ */
   const claves = Object.keys(o)
   if ((claves.length === 1) && (claves[0][0] === "$")) {
     o[claves[0]].map(x => Transformador(x))
   } else {
     Object.keys(o).map(k => {
-      //toDo: luego aca deberia transformar otros campos ,ej : date
-      o[k] = toExp(o[k])
+      o[k] = toExp(o[k]) //toDo: luego aca deberia transformar otros campos ,ej : date
     })
   }
 }
@@ -171,7 +210,7 @@ app.patch("/api/:collection/:id", (req, res) => {
     $set: req.body
   }, (err, result) => funkInter(res, err, result))
 })
-//--------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------Funcion que mas se repite
 const funkInter = (res, err, result) => {
   if (err) {
     res.status(500).send({
@@ -181,6 +220,6 @@ const funkInter = (res, err, result) => {
     return
   }
   res.send(result)
-} // Funcion que mas ser repite
+}
 
 app.listen(3000, () => console.log("listo en 3000..."))

@@ -6,7 +6,7 @@ curl  -H "Authorization: Bearer <token>" -H "Content-Type: application/json;char
 curl  -H "Authorization: Bearer <token>"-H "Content-Type: application/json;charset=UTF-8"  -XPUT -d "{\"user\":\"nrenzo\",\"password\":\"333\"}" http://localhost:3000/api/usuarios
 
 
-curl  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWUzMzAzZDgzYzJjMDg3ODI5ZmUxMjgiLCJ1c2VyIjoianVsaW8iLCJwYXNzd29yZCI6IjEyMyIsImlhdCI6MTUyNTc4ODA1NCwiZXhwIjoxNTI1Nzg4MzU0fQ.uGliBP2N0bC4uQW0T76GrlDXXePXqRD5_Ee5HWbuHTI" -H "Content-Type: application/json;charset=UTF-8"  -XPATCH -d "{\"user\":\"joawe\"}" http://localhost:3000/api/usuarios/5ae3306b83c2c087829fe129
+curl  -H "Authorization: Bearer <TOKEN> -H "Content-Type: application/json;charset=UTF-8"  -XPATCH -d "{\"user\":\"joawe\"}" http://localhost:3000/api/usuarios/5ae3306b83c2c087829fe129
 
 `curl -XPATCH -H 'Content-Type:application/json' -d '{"data":"valor"}' http://localhost:3000/cliente/2`
 
