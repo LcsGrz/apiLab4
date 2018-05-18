@@ -142,8 +142,8 @@ app.get("/api/:collection", (req, res) => {
     l
   } = req.query
 
-  l = (l != undefined) ? (!isNaN(parseInt(l))) ? parseInt(l) : 10 : 10
-  p = (p != undefined) ? (!isNaN(parseInt(p))) ? parseInt(p) : 0 : 0
+  l = (Comprobacion(l) && !isNaN(parseInt(l))) ? parseInt(l) : 10
+  p = (Comprobacion(p) && !isNaN(parseInt(p))) ? parseInt(p) : 0 
 
   try {
     q = (q === undefined) ? {} : JSON.parse(q)
@@ -166,7 +166,7 @@ app.get("/api/:collection", (req, res) => {
     }
     res.send({
       result,
-      next: "/" + req.params.collection + "?" + ((q && q !== 'null' && q !== 'undefined') ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l
+      next: "/" + req.params.collection + "?" + ((Comprobacion(q)) ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l
     })
   })
 })
@@ -186,12 +186,12 @@ function Transformador(o) {
     })
   }
 }
-function transToken(s){
-  if(/^\/.*\/$/.test(s)){
-    return new RegExp(s.substring(1, s.length - 1)) 
-  }
-  else if("/@.*@/".test(s)){
-      return new Date(s.substring(1, s.length - 1))
+
+function transToken(s) {
+  if (/^\/.*\/$/.test(s)) {
+    return new RegExp(s.substring(1, s.length - 1))
+  } else if ("/@.*@/".test(s)) {
+    return new Date(s.substring(1, s.length - 1))
   } else {
     return s
   }
@@ -249,5 +249,5 @@ const funkInter = (res, err, result) => {
   }
   res.send(result)
 }
-
+const Comprobacion = valor => valor && valor !== null && valor !== undefined
 app.listen(3000, () => console.log("listo en 3000..."))
