@@ -181,12 +181,23 @@ function Transformador(o) {
     o[claves[0]].map(x => Transformador(x))
   } else {
     Object.keys(o).map(k => {
-      o[k] = toExp(o[k]) //toDo: luego aca deberia transformar otros campos ,ej : date
+      //o[k] = toExp(o[k]) //toDo: luego aca deberia transformar otros campos ,ej : date
+      o[k] = transToken(o[k])
     })
   }
 }
-
-const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
+function transToken(s){
+  if(/^\/.*\/$/.test(s)){
+    return new RegExp(s.substring(1, s.length - 1)) 
+  }
+  else if("/@.*@/".test(s)){
+      return new Date(s.substring(1, s.length - 1))
+  } else {
+    return s
+  }
+}
+//const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
+//const toExpFecha = (fecha) => /^@.*@$/.test(fecha) ? new Date(fecha.substring(1, clave.length - 1)) : fecha
 //------------------------------------------------------------------------------------------------------------Profe
 //--------------------------------------------------------------------------------------------Ver por ID
 app.get("/api/:collection/:id", (req, res) => {
