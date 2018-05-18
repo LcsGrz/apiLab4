@@ -137,8 +137,13 @@ const CrearToken = (result, tiempo, res) => {
 //--------------------------------------------------------------------------------------------Ver
 app.get("/api/:collection", (req, res) => {
   let {
-    q
+    q,
+    p,
+    l
   } = req.query
+
+  l = (l != undefined) ? (!isNaN(parseInt(l))) ? parseInt(l) : 10 : 10
+  p = (p != undefined) ? (!isNaN(parseInt(p))) ? parseInt(p) : 0 : 0
 
   try {
     q = (q === undefined) ? {} : JSON.parse(q)
@@ -151,7 +156,19 @@ app.get("/api/:collection", (req, res) => {
   }
 
   Transformador(q)
-  db.collection(req.params.collection).find(q).toArray((err, result) => funkInter(res, err, result))
+  db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
+    if (err) {
+      res.status(500).send({
+        error: true,
+        trace: err
+      })
+      return
+    }
+    res.send({
+      result,
+      next: "/" + req.params.collection + "?" + ((q && q !== 'null' && q !== 'undefined') ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l
+    })
+  })
 })
 
 function Transformador(o) {
