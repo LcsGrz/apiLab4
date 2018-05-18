@@ -55,73 +55,64 @@ app.use("/api/:collection", (req, res, next) => {
 })
 
 app.use((req, res, next) => {
-  console.log(collection)
   if (collection !== "register" && collection !== "login") {
-    console.log("entre al middleware")
-    if (req.user === undefined || roles[req.user.rol][collection] === undefined) {
-      res.status(420).send({
+    if (req.user === undefined || roles[req.user.rol][collection] === undefined)
+      return res.status(420).send({
         error: true,
         trace: "Algo anda mal, expiro su token, o la colleccion no existe."
       })
-      return
-    } else if (!roles[req.user.rol][collection][req.method]) {
-      res.status(500).send({
+    else if (!roles[req.user.rol][collection][req.method])
+      return res.status(500).send({
         error: true,
         trace: "No cuentas con los permisos suficientes."
       })
-      return
-    }
   }
   next()
 })
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res) => {
-  if (!("credentials" in req.body)) {
-    res.status(500).send({
+  if (!("credentials" in req.body))
+    return res.status(500).send({
       erro: true,
       trace: "bad request"
     })
-    return
-  }
+
 
   const q = JSON.parse("{\"user\":\"" + req.body.credentials.user + "\"}")
 
   db.collection("usuarios").findOne(q, (err, result) => {
-    if (err || result === null) {
-      res.status(500).send({
+    if (err || result === null)
+      return res.status(500).send({
         error: true,
         trace: err
       })
-      return
-    }
-    let passwordIsValid = bcrypt.compareSync(req.body.credentials.password, result.password)
-    if (!passwordIsValid) return res.status(401).send({
-      auth: false,
-      token: null
-    })
+
+    if (!bcrypt.compareSync(req.body.credentials.password, result.password))
+      return res.status(401).send({
+        auth: false,
+        token: null
+      })
 
     CrearToken(result, 3600, res)
   })
 })
 //--------------------------------------------------------------------------------------------Registrar
-app.post("/register", function (req, res) {
-  if (!("credentials" in req.body)) {
-    res.status(500).send({
+app.post("/register", (req, res) => {
+  if (!("credentials" in req.body))
+    return res.status(500).send({
       erro: true,
       trace: "bad request"
     })
-    return
-  }
+
   req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8)
   db.collection("usuarios").insert(req.body.credentials, (err, result) => {
-    if (err || result === null) {
-      res.status(500).send({
+    if (err || result === null)
+      return res.status(500).send({
         error: true,
         trace: err
       })
-      return
-    }
+
     CrearToken(result, 3600, res)
   })
 })
@@ -143,27 +134,25 @@ app.get("/api/:collection", (req, res) => {
   } = req.query
 
   l = (Comprobacion(l) && !isNaN(parseInt(l))) ? parseInt(l) : 10
-  p = (Comprobacion(p) && !isNaN(parseInt(p))) ? parseInt(p) : 0 
+  p = (Comprobacion(p) && !isNaN(parseInt(p))) ? parseInt(p) : 0
 
   try {
     q = (q === undefined) ? {} : JSON.parse(q)
   } catch (Exception) {
-    res.status(666).send({
+    return res.status(666).send({
       error: true,
       trace: "JSON no compatible."
     })
-    return
   }
 
   Transformador(q)
   db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
-    if (err) {
-      res.status(500).send({
+    if (err)
+      return res.status(500).send({
         error: true,
         trace: err
       })
-      return
-    }
+
     res.send({
       result,
       next: "/" + req.params.collection + "?" + ((Comprobacion(q)) ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l
@@ -188,13 +177,12 @@ function Transformador(o) {
 }
 
 function transToken(s) {
-  if (/^\/.*\/$/.test(s)) {
+  if (/^\/.*\/$/.test(s))
     return new RegExp(s.substring(1, s.length - 1))
-  } else if ("/@.*@/".test(s)) {
+  else if ("/@.*@/".test(s))
     return new Date(s.substring(1, s.length - 1))
-  } else {
-    return s
-  }
+
+  return s
 }
 //const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
 //const toExpFecha = (fecha) => /^@.*@$/.test(fecha) ? new Date(fecha.substring(1, clave.length - 1)) : fecha
@@ -240,13 +228,12 @@ app.patch("/api/:collection/:id", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Funcion que mas se repite
 const funkInter = (res, err, result) => {
-  if (err) {
-    res.status(500).send({
+  if (err)
+    return res.status(500).send({
       error: true,
       trace: err
     })
-    return
-  }
+
   res.send(result)
 }
 const Comprobacion = valor => valor && valor !== null && valor !== undefined
