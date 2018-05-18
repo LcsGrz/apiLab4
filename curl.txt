@@ -1,0 +1,23 @@
+curl  -H "Authorization: Bearer <token>"-H "Content-Type: application/json;charset=UTF-8"  -XGET  http://localhost:3000/api/usuarios
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWUzMzAzZDgzYzJjMDg3ODI5ZmUxMjgiLCJ1c2VyIjoianVsaW8iLCJwYXNzd29yZCI6IjEyMyIsImlhdCI6MTUyNTc4Njg0MCwiZXhwIjoxNTI1Nzg3MTQwfQ.pBh9rdrtFuFwKME0i10u6l87Z90inUQISCyRM00LqL8
+
+curl  -H "Authorization: Bearer <token>" -H "Content-Type: application/json;charset=UTF-8"  -XPUT -d "{}" http://localhost:3000/api/usuarios
+
+curl  -H "Authorization: Bearer <token>"-H "Content-Type: application/json;charset=UTF-8"  -XPUT -d "{\"user\":\"nrenzo\",\"password\":\"333\"}" http://localhost:3000/api/usuarios
+
+
+curl  -H "Authorization: Bearer <TOKEN> -H "Content-Type: application/json;charset=UTF-8"  -XPATCH -d "{\"user\":\"joawe\"}" http://localhost:3000/api/usuarios/5ae3306b83c2c087829fe129
+
+`curl -XPATCH -H 'Content-Type:application/json' -d '{"data":"valor"}' http://localhost:3000/cliente/2`
+
+`
+curl -XPUT -H 'Content-Type:application/json' -d '{"data":"valor"}' http://localhost:3000/cliente`
+`
+curl -XDELETE -H 'Content-Type:application/json' http://localhost:3000/cliente/5
+
+
+	
+----final pro---
+curl -d "{\"user\":\"julio\",\"password\":\"123\"}" -H "Content-Type: application/json" -X POST http://localhost:3000/login
+--credentials--
+curl -d "{\"credentials\": \"{ "'user'": "'julio'" , "'password'": "'123'"}\"}" -H "Content-Type:application/json" -X POST http://localhost:3000/login
