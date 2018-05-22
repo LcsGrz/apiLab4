@@ -1,4 +1,5 @@
 const bodyParser = require("body-parser")
+const fs = require("fs")
 const expressJwt = require("express-jwt")
 const jwt = require("jsonwebtoken")
 const express = require("express")
@@ -200,7 +201,21 @@ app.get("/api/:collection/:id", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Insertar
 app.put("/api/:collection", (req, res) => {
-  db.collection(req.params.collection).insert(req.body, (err, result) => funkInter(res, err, result))
+  const {
+    media,
+    fecha
+  } = req.body
+  if (Comprobacion(media)) {
+    const dt = new Date()
+    let url = "./Media/" + (dt.getMonth()+1) + "-" + dt.getDate() + "-" + dt.getFullYear() +"_"+ Math.floor((Math.random() * 1000))
+    req.body.media = url
+    fs.writeFile(url, media, err => err)
+    console.log(url)
+  }
+  if (Comprobacion(fecha)) {
+    req.body.fecha = new Date(fecha)
+  }
+  //db.collection(req.params.collection).insert(req.body, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Borrar
 app.delete("/api/:collection/:id", (req, res) => {
