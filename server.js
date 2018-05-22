@@ -1,5 +1,6 @@
 const bodyParser = require("body-parser")
 const fs = require("fs")
+const errores = require("./Errores.js")
 const expressJwt = require("express-jwt")
 const jwt = require("jsonwebtoken")
 const express = require("express")
@@ -10,6 +11,7 @@ const MongoClient = mongodb.MongoClient
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
 const secret = "palabrasecreta"
+let lang = "ES"
 let db = ""
 let roles
 let collection
@@ -30,14 +32,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
-app.use((err, req, res, next) => {
-  if (err.name === "UnauthorizedError") {
-    res.status(401).send({
-      error: true,
-      trace: "invalid token..."
-    })
-  }
-})
+
 
 app.use("/api/", expressJwt({
   secret: secret
@@ -58,10 +53,7 @@ app.use("/api/:collection", (req, res, next) => {
 app.use((req, res, next) => {
   if (collection !== "register" && collection !== "login") {
     if (req.user === undefined || roles[req.user.rol][collection] === undefined)
-      return res.status(420).send({
-        error: true,
-        trace: "Algo anda mal, expiro su token, o la colleccion no existe."
-      })
+      throw "NoTokenNoCollection"
     else if (!roles[req.user.rol][collection][req.method])
       return res.status(500).send({
         error: true,
@@ -207,7 +199,7 @@ app.put("/api/:collection", (req, res) => {
   } = req.body
   if (Comprobacion(media)) {
     const dt = new Date()
-    let url = "./Media/" + (dt.getMonth()+1) + "-" + dt.getDate() + "-" + dt.getFullYear() +"_"+ Math.floor((Math.random() * 1000))
+    let url = "./Media/" + (dt.getMonth() + 1) + "-" + dt.getDate() + "-" + dt.getFullYear() + "_" + Math.floor((Math.random() * 1000))
     req.body.media = url
     fs.writeFile(url, media, err => err)
     console.log(url)
@@ -242,6 +234,10 @@ app.patch("/api/:collection/:id", (req, res) => {
   }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Funcion que mas se repite
+app.use((err, req, res, next) => {
+  if (err)
+    res.send(errores[lang][err])
+})
 const funkInter = (res, err, result) => {
   if (err)
     return res.status(500).send({
