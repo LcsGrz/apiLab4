@@ -18,9 +18,7 @@ let collection
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
   if (err) {
-    console.log(err)
-    return err
-  }
+    throw "ErrorServer"
   console.log("Connected successfully to server")
   db = client.db(dbName)
   db.collection("roles").findOne({}, (err, result) => {
@@ -55,10 +53,7 @@ app.use((req, res, next) => {
     if (req.user === undefined || roles[req.user.rol][collection] === undefined)
       throw "NoTokenNoCollection"
     else if (!roles[req.user.rol][collection][req.method])
-      return res.status(500).send({
-        error: true,
-        trace: "No cuentas con los permisos suficientes."
-      })
+      throw "UnauthorizedError"
   }
   next()
 })
@@ -66,26 +61,16 @@ app.use((req, res, next) => {
 //--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res) => {
   if (!("credentials" in req.body))
-    return res.status(500).send({
-      erro: true,
-      trace: "bad request"
-    })
-
+    throw "ErrorCliente"
 
   const q = JSON.parse("{\"user\":\"" + req.body.credentials.user + "\"}")
 
   db.collection("usuarios").findOne(q, (err, result) => {
     if (err || result === null)
-      return res.status(500).send({
-        error: true,
-        trace: err
-      })
+       throw "ErrorCliente"
 
     if (!bcrypt.compareSync(req.body.credentials.password, result.password))
-      return res.status(401).send({
-        auth: false,
-        token: null
-      })
+      throw "UnauthorizedError"
 
     CrearToken(result, 3600, res)
   })
@@ -93,18 +78,12 @@ app.post("/login", (req, res) => {
 //--------------------------------------------------------------------------------------------Registrar
 app.post("/register", (req, res) => {
   if (!("credentials" in req.body))
-    return res.status(500).send({
-      erro: true,
-      trace: "bad request"
-    })
+    throw "ErrorCliente"
 
   req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8)
   db.collection("usuarios").insert(req.body.credentials, (err, result) => {
     if (err || result === null)
-      return res.status(500).send({
-        error: true,
-        trace: err
-      })
+      throw "ErrorCliente"
 
     CrearToken(result, 3600, res)
   })
@@ -132,19 +111,13 @@ app.get("/api/:collection", (req, res) => {
   try {
     q = (q === undefined) ? {} : JSON.parse(q)
   } catch (Exception) {
-    return res.status(666).send({
-      error: true,
-      trace: "JSON no compatible."
-    })
+    throw "BadJSON"
   }
 
   Transformador(q)
   db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
     if (err)
-      return res.status(500).send({
-        error: true,
-        trace: err
-      })
+      throw "ErrorCliente"
 
     res.send({
       result,
@@ -202,12 +175,11 @@ app.put("/api/:collection", (req, res) => {
     let url = "./Media/" + (dt.getMonth() + 1) + "-" + dt.getDate() + "-" + dt.getFullYear() + "_" + Math.floor((Math.random() * 1000))
     req.body.media = url
     fs.writeFile(url, media, err => err)
-    console.log(url)
   }
   if (Comprobacion(fecha)) {
     req.body.fecha = new Date(fecha)
   }
-  //db.collection(req.params.collection).insert(req.body, (err, result) => funkInter(res, err, result))
+  db.collection(req.params.collection).insert(req.body, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Borrar
 app.delete("/api/:collection/:id", (req, res) => {
@@ -240,10 +212,7 @@ app.use((err, req, res, next) => {
 })
 const funkInter = (res, err, result) => {
   if (err)
-    return res.status(500).send({
-      error: true,
-      trace: err
-    })
+    throw "ErrorCliente"
 
   res.send(result)
 }
