@@ -1,11 +1,13 @@
 <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Oswald|Russo+One" rel="stylesheet">
 <style>
     * {
+        margin: 0;
         font-family: 'Oswald', sans-serif;
+ font-size: 20px;
         /* font-family: 'Fjalla One', sans-serif;
         font-family: 'Russo One', sans-serif;*/
     }
-*{ margin: 0;}
+
     .fondo {
         background: linear-gradient(-135deg, #c850c0, #4158d0);
         width: 100%;
@@ -20,7 +22,7 @@
 
     .divredondo {
         background-color: white;
-        width: 50%;
+        width: 40%;
         height: 80%;
     }
 
@@ -37,20 +39,10 @@
         box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
     }
 
-    .blur {
-        -webkit-filter: blur(5px);
-        -moz-filter: blur(5px);
-        -o-filter: blur(5px);
-        -ms-filter: blur(5px);
-        filter: blur(5px);
-    }
-
     .boton {
-        font-size: 30px;
         color: #fff;
         width: 250px;
         height: 50px;
-        border-radius: 25px;
         background: #57b846;
         display: -webkit-box;
         display: -webkit-flex;
@@ -64,7 +56,6 @@
         -moz-transition: all 0.4s;
         transition: all 0.4s;
         cursor: pointer;
-        border-style: none;
     }
 
     .boton:hover {
@@ -72,42 +63,59 @@
     }
 
     .user {
-        background: url(../src/user.svg) left no-repeat;
+        background: url(./NUBE.png) left no-repeat;
         background-size: 35px 35px;
-        height: 30px;
-        font: 20px Ms Sans Serif;
         padding-left: 35px;
         color: #666666;
         background: #e6e6e6;
-        width: 35 px;
+ width: 250px; height: 50px;
         padding-right: 25px;
     }
 
-    .nose {
-
-        display: inline;
-        position: relative;
-        content: "";
-        clear: both;
-        display: table;
+    a:link {
+        text-decoration: none;
+        color: #4158d0;
+ font-size: 15px;
+    }
+    a:hover {
+        transition: 0.5s;
+        color: #c850c0;
     }
 
-    .labimg {
-        height: "";
-        width "";
+    .links {
+        float: left;
+
+    }
+
+    p {
+        color: #666666;
+        margin-left: 5px;
+        margin-right: 5px;
+ font-size: 15px;
     }
 </style>
 
 <body class="centrado fondo">
-<div class="divredondo sombra centrado bordeRedondeados">
+    <div class="divredondo sombra centrado bordeRedondeados">
         <div>
             <div data-tilt class="nose">
                 <img src="./NUBE.png" alt="" class="">
             </div>
             <br>
-<input type="text" class="user  bordeRedondeados" placeholder="CONTRASEÑA">
+            <input type="text" class="user  bordeRedondeados" placeholder="USUARIO">
+<br>
+<br>
+            <input type="text" class="user  bordeRedondeados" placeholder="CONTRASEÑA">
+<br>
+<br>
+            <button class="boton bordeRedondeados">INGRESAR</button>
+<br>
+            <div>
+                <a href="url" class="links">REGISTRAR</a>
+                <p class="links"> / </p>
+                <a href="url" class="links">OLVIDE MI CONTRASEÑA</a>
+            </div>
             <br>
-<button class="boton bordeRedondeados">INGRESAR</button>
         </div>
     </div>
     <script src="./jquery/jquery-3.2.1.min.js"></script>
