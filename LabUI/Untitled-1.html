@@ -1,0 +1,126 @@
+<link href="https://fonts.googleapis.com/css?family=Fjalla+One|Oswald|Russo+One" rel="stylesheet">
+<style>
+    * {
+        font-family: 'Oswald', sans-serif;
+        /* font-family: 'Fjalla One', sans-serif;
+        font-family: 'Russo One', sans-serif;*/
+    }
+
+    .fondo {
+        background: linear-gradient(-135deg, #c850c0, #4158d0);
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
+
+    .centrado {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .divredondo {
+        border-radius: 30px 30px 30px 30px;
+        -moz-border-radius: 30px 30px 30px 30px;
+        -webkit-border-radius: 30px 30px 30px 30px;
+        background-color: white;
+        width: 50%;
+        height: 80%;
+        margin: 0
+    }
+
+    input {
+        -moz-border-radius: 30px;
+        -webkit-border-radius: 30px;
+        border-radius: 30px;
+        border-style: none;
+    }
+
+    .sombra {
+        -webkit-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
+        box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
+    }
+
+    .blur {
+        -webkit-filter: blur(5px);
+        -moz-filter: blur(5px);
+        -o-filter: blur(5px);
+        -ms-filter: blur(5px);
+        filter: blur(5px);
+    }
+
+    .boton {
+        font-size: 30px;
+        color: #fff;
+        width: 250px;
+        height: 50px;
+        border-radius: 25px;
+        background: #57b846;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        -webkit-transition: all 0.4s;
+        -o-transition: all 0.4s;
+        -moz-transition: all 0.4s;
+        transition: all 0.4s;
+        cursor: pointer;
+        border-style: none;
+    }
+
+    .boton:hover {
+        background: rgb(66, 165, 46);
+    }
+
+    .user {
+        background: url(../src/user.svg) left no-repeat;
+        background-size: 35px 35px;
+        height: 30px;
+        font: 20px Ms Sans Serif;
+        padding-left: 35px;
+        color: #666666;
+        background: #e6e6e6;
+        width: 35 px;
+        padding-right: 25px;
+    }
+
+    .nose {
+
+        display: inline;
+        position: relative;
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    .labimg {
+        height: "";
+        width "";
+    }
+</style>
+
+<body class="centrado fondo">
+    <div class="divredondo sombra centrado">
+        <div>
+            <div data-tilt class="nose">
+                <img src="./NUBE.png" alt="" class="">
+            </div>
+            <br>
+            <input type="text" class="user  " placeholder="CONTRASEÑA">
+            <br>
+            <button class="boton ">INGRESAR</button>
+        </div>
+    </div>
+    <script src="./jquery/jquery-3.2.1.min.js"></script>
+    <!-- Load jQuery first -->
+    <script src="./tilt/tilt.jquery.min.js"></script>
+    <script>
+        $('.js-tilt').tilt({
+            scale: 2.1
+        })
+    </script>
+</body>

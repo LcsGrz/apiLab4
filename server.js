@@ -55,12 +55,13 @@ app.use((req, res, next) => {
     else if (!roles[req.user.rol][collection][req.method])
       throw "UnauthorizedError"
   }
+  console.log(req)
   next()
 })
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res) => {
-  console.log(req.body)
+  console.log('llegue re piola')
   if (!("credentials" in req.body))
     throw "ErrorCliente"
 
