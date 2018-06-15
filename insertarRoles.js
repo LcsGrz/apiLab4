@@ -15,7 +15,7 @@ MongoClient.connect(url, (err, client) => {
   }
   console.log("Connected successfully to server")
   db = client.db(dbName)
-  db.insert({"admin": { "pullers": {"GET": true,"POST": true,"PUT": true,"DELETE": true,"PATCH": true},"usuarios": {"GET": true,"POST": true,"PUT": true,"DELETE": true,"PATCH": true}},"usuario": { "pullers": {"GET": true,"POST": true,"PUT": true,"DELETE": true,"PATCH": true}}},() => {
+  db.collection('roles').insert({"admin": { "pullers": {"GET": true,"POST": true,"PUT": true,"DELETE": true,"PATCH": true},"usuarios": {"GET": true,"POST": true,"PUT": true,"DELETE": true,"PATCH": true}},"usuario": { "pullers": {"GET": true,"POST": true,"PUT": true,"DELETE": true,"PATCH": true}}},() => {
     console.log("Insertado!")
   })
 })

@@ -1,5 +1,6 @@
 const bodyParser = require("body-parser")
 const fs = require("fs")
+const cors = require("cors")
 const errores = require("./Errores.js")
 const expressJwt = require("express-jwt")
 const jwt = require("jsonwebtoken")
@@ -26,6 +27,7 @@ MongoClient.connect(url, (err, client) => {
   })
 })
 //------------------------------------------------------------------------------------------------------------MIDDLEWARES
+app.use(cors())
 app.use(bodyParser.urlencoded({
   extended: false
 }))
@@ -55,6 +57,7 @@ app.use((req, res, next) => {
     else if (!roles[req.user.rol][collection][req.method])
       throw "UnauthorizedError"
   }
+  console.log(req.body)
   next()
 })
 //------------------------------------------------------------------------------------------------------------Propios
