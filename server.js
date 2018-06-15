@@ -1,5 +1,6 @@
 const bodyParser = require("body-parser")
 const fs = require("fs")
+const cors = require("cors")
 const errores = require("./Errores.js")
 const expressJwt = require("express-jwt")
 const jwt = require("jsonwebtoken")
@@ -26,6 +27,7 @@ MongoClient.connect(url, (err, client) => {
   })
 })
 //------------------------------------------------------------------------------------------------------------MIDDLEWARES
+app.use(cors())
 app.use(bodyParser.urlencoded({
   extended: false
 }))
@@ -48,31 +50,19 @@ app.use("/api/:collection", (req, res, next) => {
   next()
 })
 
-app.use((req, res, next) => {
-  if (collection !== "register" && collection !== "login") {
-    if (req.user === undefined || roles[req.user.rol][collection] === undefined)
-      throw "NoTokenNoCollection"
-    else if (!roles[req.user.rol][collection][req.method])
-      throw "UnauthorizedError"
-  }
-  next()
-})
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res) => {
-  console.log(req.body)
-  if (!("credentials" in req.body))
-    throw "ErrorCliente"
-
+  
+  if (!("credentials" in req.body)){
+    throw "ErrorCliente"}
+  
   const q = JSON.parse("{\"user\":\"" + req.body.credentials.user + "\"}")
-
   db.collection("usuarios").findOne(q, (err, result) => {
     if (err || result === null)
        throw "ErrorCliente"
-
     if (!bcrypt.compareSync(req.body.credentials.password, result.password))
       throw "UnauthorizedError"
-
     CrearToken(result, 3600, res)
   })
 })
@@ -80,7 +70,6 @@ app.post("/login", (req, res) => {
 app.post("/register", (req, res) => {
   if (!("credentials" in req.body))
     throw "ErrorCliente"
-
   req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8)
   db.collection("usuarios").insert(req.body.credentials, (err, result) => {
     if (err || result === null)
@@ -218,4 +207,14 @@ const funkInter = (res, err, result) => {
   res.send(result)
 }
 const Comprobacion = valor => valor && valor !== null && valor !== undefined
+
+app.use((req, res, next) => {
+  if (collection !== "register" && collection !== "login") {
+    if (req.user === undefined || roles[req.user.rol][collection] === undefined)
+      throw "NoTokenNoCollection"
+    else if (!roles[req.user.rol][collection][req.method])
+      throw "UnauthorizedError"
+  }
+  next()
+})
 app.listen(3000, () => console.log("listo en 3000..."))
