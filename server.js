@@ -18,7 +18,7 @@ let roles
 let collection
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
-  if (err) 
+  if (err)
     throw "ErrorServer"
   console.log("Connected successfully to server")
   db = client.db(dbName)
@@ -71,7 +71,7 @@ app.post("/login", (req, res) => {
 
   db.collection("usuarios").findOne(q, (err, result) => {
     if (err || result === null)
-       throw "ErrorCliente"
+      throw "ErrorCliente"
 
     if (!bcrypt.compareSync(req.body.credentials.password, result.password))
       throw "UnauthorizedError"
@@ -81,145 +81,155 @@ app.post("/login", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Registrar
 app.post("/register", (req, res) => {
-  console.log("register")
-  if (!("credentials" in req.body))
-    throw "ErrorCliente"
+      console.log("register")
+      if (!("credentials" in req.body))
+        throw "ErrorCliente"
 
-  req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8)
-  db.collection("usuarios").insert(req.body.credentials, (err, result) => {
-    if (err || result === null)
-      throw "ErrorCliente"
+      db.collection("usuarios").findOne(req.body.credentials.email, (err, result) => { //Verifica que no exista el email
+          if (result !== null)
+            throw "InUseMail"
+        })
 
-    CrearToken(result, 3600, res)
-  })
-})
+        db.collection("usuarios").findOne(req.body.credentials.user, (err, result) => { //Verifica que no exista el nick
+            if (result !== null)
+              throw "InUseNick"
+          })
+          req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8) //Encripta
+          
+          db.collection("usuarios").insert("{"+req.body.credentials+",rol:usuario}", (err, result) => { //Inserta el usuario
+            if (err || result === null)
+              throw "ErrorCliente"
 
-const CrearToken = (result, tiempo, res) => {
-  const token = jwt.sign(result, secret, {
-    expiresIn: tiempo
-  })
-  res.send({
-    token
-  })
-}
-//--------------------------------------------------------------------------------------------Ver
-app.get("/api/:collection", (req, res) => {
-  let {
-    q,
-    p,
-    l
-  } = req.query
+            CrearToken(result, 3600, res)
+          })
+        })
 
-  l = (Comprobacion(l) && !isNaN(parseInt(l))) ? parseInt(l) : 10
-  p = (Comprobacion(p) && !isNaN(parseInt(p))) ? parseInt(p) : 0
+      const CrearToken = (result, tiempo, res) => {
+        const token = jwt.sign(result, secret, {
+          expiresIn: tiempo
+        })
+        res.send({
+          token
+        })
+      }
+      //--------------------------------------------------------------------------------------------Ver
+      app.get("/api/:collection", (req, res) => {
+        let {
+          q,
+          p,
+          l
+        } = req.query
 
-  try {
-    q = (q === undefined) ? {} : JSON.parse(q)
-  } catch (Exception) {
-    throw "BadJSON"
-  }
+        l = (Comprobacion(l) && !isNaN(parseInt(l))) ? parseInt(l) : 10
+        p = (Comprobacion(p) && !isNaN(parseInt(p))) ? parseInt(p) : 0
 
-  Transformador(q)
-  db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
-    if (err)
-      throw "ErrorCliente"
+        try {
+          q = (q === undefined) ? {} : JSON.parse(q)
+        } catch (Exception) {
+          throw "BadJSON"
+        }
 
-    res.send({
-      result,
-      next: "/" + req.params.collection + "?" + ((Comprobacion(q)) ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l
-    })
-  })
-})
+        Transformador(q)
+        db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
+          if (err)
+            throw "ErrorCliente"
 
-function Transformador(o) {
-  /* Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
-                                  eso es por que todas las claves especiales de mongo van unicas y empiezan con $
+          res.send({
+            result,
+            next: "/" + req.params.collection + "?" + ((Comprobacion(q)) ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l
+          })
+        })
+      })
 
-  Object.keys(o)[0][0] === "$" --> clave unica empieza con $ */
-  const claves = Object.keys(o)
-  if ((claves.length === 1) && (claves[0][0] === "$")) {
-    o[claves[0]].map(x => Transformador(x))
-  } else {
-    Object.keys(o).map(k => {
-      //o[k] = toExp(o[k]) //toDo: luego aca deberia transformar otros campos ,ej : date
-      o[k] = transToken(o[k])
-    })
-  }
-}
+      function Transformador(o) {
+        /* Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
+                                        eso es por que todas las claves especiales de mongo van unicas y empiezan con $
 
-function transToken(s) {
-  if (/^\/.*\/$/.test(s))
-    return new RegExp(s.substring(1, s.length - 1))
-  else if ("/@.*@/".test(s))
-    return new Date(s.substring(1, s.length - 1))
+        Object.keys(o)[0][0] === "$" --> clave unica empieza con $ */
+        const claves = Object.keys(o)
+        if ((claves.length === 1) && (claves[0][0] === "$")) {
+          o[claves[0]].map(x => Transformador(x))
+        } else {
+          Object.keys(o).map(k => {
+            //o[k] = toExp(o[k]) //toDo: luego aca deberia transformar otros campos ,ej : date
+            o[k] = transToken(o[k])
+          })
+        }
+      }
 
-  return s
-}
-//const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
-//const toExpFecha = (fecha) => /^@.*@$/.test(fecha) ? new Date(fecha.substring(1, clave.length - 1)) : fecha
-//------------------------------------------------------------------------------------------------------------Profe
-//--------------------------------------------------------------------------------------------Ver por ID
-app.get("/api/:collection/:id", (req, res) => {
-  const {
-    id,
-    collection
-  } = req.params
+      function transToken(s) {
+        if (/^\/.*\/$/.test(s))
+          return new RegExp(s.substring(1, s.length - 1))
+        else if ("/@.*@/".test(s))
+          return new Date(s.substring(1, s.length - 1))
 
-  db.collection(collection).findOne({
-    _id: new mongodb.ObjectID(id)
-  }, (err, result) => funkInter(res, err, result))
-})
-//--------------------------------------------------------------------------------------------Insertar
-app.put("/api/:collection", (req, res) => {
-  const {
-    media,
-    fecha
-  } = req.body
-  if (Comprobacion(media)) {
-    const dt = new Date()
-    let url = "./Media/" + (dt.getMonth() + 1) + "-" + dt.getDate() + "-" + dt.getFullYear() + "_" + Math.floor((Math.random() * 1000))
-    req.body.media = url
-    fs.writeFile(url, media, err => err)
-  }
-  if (Comprobacion(fecha)) {
-    req.body.fecha = new Date(fecha)
-  }
-  db.collection(req.params.collection).insert(req.body, (err, result) => funkInter(res, err, result))
-})
-//--------------------------------------------------------------------------------------------Borrar
-app.delete("/api/:collection/:id", (req, res) => {
-  const {
-    id,
-    collection
-  } = req.params
+        return s
+      }
+      //const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
+      //const toExpFecha = (fecha) => /^@.*@$/.test(fecha) ? new Date(fecha.substring(1, clave.length - 1)) : fecha
+      //------------------------------------------------------------------------------------------------------------Profe
+      //--------------------------------------------------------------------------------------------Ver por ID
+      app.get("/api/:collection/:id", (req, res) => {
+        const {
+          id,
+          collection
+        } = req.params
 
-  db.collection(collection).deleteOne({
-    _id: new mongodb.ObjectID(id)
-  }, (err, result) => funkInter(res, err, result))
-})
-//--------------------------------------------------------------------------------------------Actualizar
-app.patch("/api/:collection/:id", (req, res) => {
-  const {
-    id,
-    collection
-  } = req.params
+        db.collection(collection).findOne({
+          _id: new mongodb.ObjectID(id)
+        }, (err, result) => funkInter(res, err, result))
+      })
+      //--------------------------------------------------------------------------------------------Insertar
+      app.put("/api/:collection", (req, res) => {
+        const {
+          media,
+          fecha
+        } = req.body
+        if (Comprobacion(media)) {
+          const dt = new Date()
+          let url = "./Media/" + (dt.getMonth() + 1) + "-" + dt.getDate() + "-" + dt.getFullYear() + "_" + Math.floor((Math.random() * 1000))
+          req.body.media = url
+          fs.writeFile(url, media, err => err)
+        }
+        if (Comprobacion(fecha)) {
+          req.body.fecha = new Date(fecha)
+        }
+        db.collection(req.params.collection).insert(req.body, (err, result) => funkInter(res, err, result))
+      })
+      //--------------------------------------------------------------------------------------------Borrar
+      app.delete("/api/:collection/:id", (req, res) => {
+        const {
+          id,
+          collection
+        } = req.params
 
-  db.collection(collection).update({
-    _id: new mongodb.ObjectID(id)
-  }, {
-    $set: req.body
-  }, (err, result) => funkInter(res, err, result))
-})
-//--------------------------------------------------------------------------------------------Funcion que mas se repite
-app.use((err, req, res, next) => {
-  if (err)
-    res.send(errores[lang][err])
-})
-const funkInter = (res, err, result) => {
-  if (err)
-    throw "ErrorCliente"
+        db.collection(collection).deleteOne({
+          _id: new mongodb.ObjectID(id)
+        }, (err, result) => funkInter(res, err, result))
+      })
+      //--------------------------------------------------------------------------------------------Actualizar
+      app.patch("/api/:collection/:id", (req, res) => {
+        const {
+          id,
+          collection
+        } = req.params
 
-  res.send(result)
-}
-const Comprobacion = valor => valor && valor !== null && valor !== undefined
-app.listen(420, "0.0.0.0", () => console.log("listo en 3000..."))
+        db.collection(collection).update({
+          _id: new mongodb.ObjectID(id)
+        }, {
+          $set: req.body
+        }, (err, result) => funkInter(res, err, result))
+      })
+      //--------------------------------------------------------------------------------------------Funcion que mas se repite
+      app.use((err, req, res, next) => {
+        if (err)
+          res.send(errores[lang][err])
+      })
+      const funkInter = (res, err, result) => {
+        if (err)
+          throw "ErrorCliente"
+
+        res.send(result)
+      }
+      const Comprobacion = valor => valor && valor !== null && valor !== undefined
+      app.listen(420, "0.0.0.0", () => console.log("listo en 3000..."))

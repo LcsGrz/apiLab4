@@ -29,6 +29,16 @@ const errores = {
       "error": true,
       "trace": "ERROR: JSON not compatible.",
       "status": 666
+    },
+    "InUseNick": {
+      "error": true,
+      "trace": "ERROR: Nick not available.",
+      "status": 666
+    },
+    "InUseMail": {
+      "error": true,
+      "trace": "ERROR: The email entered corresponds to a user.",
+      "status": 666
     }
   },
   "ES": {
@@ -60,6 +70,16 @@ const errores = {
     "BadJSON": {
       "error": true,
       "trace": "ERROR: JSON no compatible.",
+      "status": 666
+    },
+    "InUseNick": {
+      "error": true,
+      "trace": "ERROR: Nick no disponible.",
+      "status": 666
+    },
+    "InUseMail": {
+      "error": true,
+      "trace": "ERROR: El email ingresado corresponde a un usuario.",
       "status": 666
     }
   }
