@@ -49,4 +49,19 @@
         }
       }
     })
+    db.collection("usuarios").insert({   
+        "user": "dario",
+        "password": "$2a$08$QtC6TXr3ETIxA5mVeJ7nreRFbi2anFbrnXdHZSrHWwp0WhgfdE5Km", //drogadicto
+        "rol": "usuario"
+    })
+    db.collection("usuarios").insert({
+      "user": "chiva",
+      "password": "$2a$08$QtC6TXr3ETIxA5mVeJ7nreRFbi2anFbrnXdHZSrHWwp0WhgfdE5Km", //drogadicto
+      "rol": "director"
+    })
+    db.collection("usuarios").insert({
+      "user": "nuevo",
+      "password": "$2a$08$QtC6TXr3ETIxA5mVeJ7nreRFbi2anFbrnXdHZSrHWwp0WhgfdE5Km", //drogadicto
+      "rol": "admin"
+    })
   })
