@@ -46,7 +46,8 @@ const diarios = {
     diario: "Noticias ULP",
     patronTitulo: "div#titulo-portada",
     patronImg: "div.imagen-noticia a img",
-    patronUrl: "#titulo-portada a"
+    patronUrl: "#titulo-portada a",
+    fecha: ".fecha-publicacion"
   },
   diariosl: {
     url: "http://eldiariodesanluis.com/",
@@ -55,7 +56,8 @@ const diarios = {
     patron: ".post-news",
     patronTitulo: "a.title",
     patronImg: "img",
-    patronUrl: "a.title"
+    patronUrl: "a.title",
+    fecha: ".post-meta .date"
   },
   slinforma: {
     url: "http://www.sanluisinforma.com.ar/",
@@ -64,7 +66,9 @@ const diarios = {
     patron: "article",
     patronTitulo: "h2.article-title",
     patronImg: ".item-image img",
-    patronUrl: "a"
+    patronUrl: "a",
+    fecha: ".create time"
+
   },
   lpsl: {
     url: "http://www.lapuntasanluis.com/",
@@ -73,7 +77,8 @@ const diarios = {
     patron: "article",
     patronTitulo: "h2.article-title",
     patronImg: "img",
-    patronUrl: "a"
+    patronUrl: "a",
+    fecha: ".create time"
   },
   sltv: {
     url: "http://sanluistv.com/",
@@ -82,7 +87,8 @@ const diarios = {
     patron: "div.td-block-span4",
     patronTitulo: "h3",
     patronImg: "img",
-    patronUrl: "a"
+    patronUrl: "a",
+    fecha: ".meta-info .td-post-date time"
   }
 }
 

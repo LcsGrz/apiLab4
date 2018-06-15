@@ -1,23 +1,24 @@
-const express = require("express")
 const bodyParser = require("body-parser")
+const fs = require("fs")
+const errores = require("./Errores.js")
+const expressJwt = require("express-jwt")
+const jwt = require("jsonwebtoken")
+const express = require("express")
 const mongodb = require("mongodb")
-const MongoClient = mongodb.MongoClient
 const bcrypt = require("bcryptjs")
 const app = express()
+const MongoClient = mongodb.MongoClient
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
-const jwt = require("jsonwebtoken")
-const expressJwt = require("express-jwt")
 const secret = "palabrasecreta"
+let lang = "ES"
 let db = ""
 let roles
 let collection
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
-  if (err) {
-    console.log(err)
-    return err
-  }
+  if (err) 
+    throw "ErrorServer"
   console.log("Connected successfully to server")
   db = client.db(dbName)
   db.collection("roles").findOne({}, (err, result) => {
@@ -29,14 +30,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
-app.use((err, req, res, next) => {
-  if (err.name === "UnauthorizedError") {
-    res.status(401).send({
-      error: true,
-      trace: "invalid token..."
-    })
-  }
-})
+
 
 app.use("/api/", expressJwt({
   secret: secret
@@ -55,73 +49,43 @@ app.use("/api/:collection", (req, res, next) => {
 })
 
 app.use((req, res, next) => {
-  console.log(collection)
   if (collection !== "register" && collection !== "login") {
-    console.log("entre al middleware")
-    if (req.user === undefined || roles[req.user.rol][collection] === undefined) {
-      res.status(420).send({
-        error: true,
-        trace: "Algo anda mal, expiro su token, o la colleccion no existe."
-      })
-      return
-    } else if (!roles[req.user.rol][collection][req.method]) {
-      res.status(500).send({
-        error: true,
-        trace: "No cuentas con los permisos suficientes."
-      })
-      return
-    }
+    if (req.user === undefined || roles[req.user.rol][collection] === undefined)
+      throw "NoTokenNoCollection"
+    else if (!roles[req.user.rol][collection][req.method])
+      throw "UnauthorizedError"
   }
   next()
 })
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res) => {
-  if (!("credentials" in req.body)) {
-    res.status(500).send({
-      erro: true,
-      trace: "bad request"
-    })
-    return
-  }
+  console.log(req.body)
+  if (!("credentials" in req.body))
+    throw "ErrorCliente"
 
   const q = JSON.parse("{\"user\":\"" + req.body.credentials.user + "\"}")
 
   db.collection("usuarios").findOne(q, (err, result) => {
-    if (err || result === null) {
-      res.status(500).send({
-        error: true,
-        trace: err
-      })
-      return
-    }
-    let passwordIsValid = bcrypt.compareSync(req.body.credentials.password, result.password)
-    if (!passwordIsValid) return res.status(401).send({
-      auth: false,
-      token: null
-    })
+    if (err || result === null)
+       throw "ErrorCliente"
+
+    if (!bcrypt.compareSync(req.body.credentials.password, result.password))
+      throw "UnauthorizedError"
 
     CrearToken(result, 3600, res)
   })
 })
 //--------------------------------------------------------------------------------------------Registrar
-app.post("/register", function (req, res) {
-  if (!("credentials" in req.body)) {
-    res.status(500).send({
-      erro: true,
-      trace: "bad request"
-    })
-    return
-  }
+app.post("/register", (req, res) => {
+  if (!("credentials" in req.body))
+    throw "ErrorCliente"
+
   req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8)
   db.collection("usuarios").insert(req.body.credentials, (err, result) => {
-    if (err || result === null) {
-      res.status(500).send({
-        error: true,
-        trace: err
-      })
-      return
-    }
+    if (err || result === null)
+      throw "ErrorCliente"
+
     CrearToken(result, 3600, res)
   })
 })
@@ -137,21 +101,30 @@ const CrearToken = (result, tiempo, res) => {
 //--------------------------------------------------------------------------------------------Ver
 app.get("/api/:collection", (req, res) => {
   let {
-    q
+    q,
+    p,
+    l
   } = req.query
+
+  l = (Comprobacion(l) && !isNaN(parseInt(l))) ? parseInt(l) : 10
+  p = (Comprobacion(p) && !isNaN(parseInt(p))) ? parseInt(p) : 0
 
   try {
     q = (q === undefined) ? {} : JSON.parse(q)
   } catch (Exception) {
-    res.status(666).send({
-      error: true,
-      trace: "JSON no compatible."
-    })
-    return
+    throw "BadJSON"
   }
 
   Transformador(q)
-  db.collection(req.params.collection).find(q).toArray((err, result) => funkInter(res, err, result))
+  db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
+    if (err)
+      throw "ErrorCliente"
+
+    res.send({
+      result,
+      next: "/" + req.params.collection + "?" + ((Comprobacion(q)) ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l
+    })
+  })
 })
 
 function Transformador(o) {
@@ -164,12 +137,22 @@ function Transformador(o) {
     o[claves[0]].map(x => Transformador(x))
   } else {
     Object.keys(o).map(k => {
-      o[k] = toExp(o[k]) //toDo: luego aca deberia transformar otros campos ,ej : date
+      //o[k] = toExp(o[k]) //toDo: luego aca deberia transformar otros campos ,ej : date
+      o[k] = transToken(o[k])
     })
   }
 }
 
-const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
+function transToken(s) {
+  if (/^\/.*\/$/.test(s))
+    return new RegExp(s.substring(1, s.length - 1))
+  else if ("/@.*@/".test(s))
+    return new Date(s.substring(1, s.length - 1))
+
+  return s
+}
+//const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
+//const toExpFecha = (fecha) => /^@.*@$/.test(fecha) ? new Date(fecha.substring(1, clave.length - 1)) : fecha
 //------------------------------------------------------------------------------------------------------------Profe
 //--------------------------------------------------------------------------------------------Ver por ID
 app.get("/api/:collection/:id", (req, res) => {
@@ -184,6 +167,19 @@ app.get("/api/:collection/:id", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Insertar
 app.put("/api/:collection", (req, res) => {
+  const {
+    media,
+    fecha
+  } = req.body
+  if (Comprobacion(media)) {
+    const dt = new Date()
+    let url = "./Media/" + (dt.getMonth() + 1) + "-" + dt.getDate() + "-" + dt.getFullYear() + "_" + Math.floor((Math.random() * 1000))
+    req.body.media = url
+    fs.writeFile(url, media, err => err)
+  }
+  if (Comprobacion(fecha)) {
+    req.body.fecha = new Date(fecha)
+  }
   db.collection(req.params.collection).insert(req.body, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Borrar
@@ -211,15 +207,15 @@ app.patch("/api/:collection/:id", (req, res) => {
   }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Funcion que mas se repite
+app.use((err, req, res, next) => {
+  if (err)
+    res.send(errores[lang][err])
+})
 const funkInter = (res, err, result) => {
-  if (err) {
-    res.status(500).send({
-      error: true,
-      trace: err
-    })
-    return
-  }
+  if (err)
+    throw "ErrorCliente"
+
   res.send(result)
 }
-
+const Comprobacion = valor => valor && valor !== null && valor !== undefined
 app.listen(3000, () => console.log("listo en 3000..."))
