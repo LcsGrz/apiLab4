@@ -5,12 +5,11 @@
         /* font-family: 'Fjalla One', sans-serif;
         font-family: 'Russo One', sans-serif;*/
     }
-
+*{ margin: 0;}
     .fondo {
         background: linear-gradient(-135deg, #c850c0, #4158d0);
         width: 100%;
         height: 100%;
-        margin: 0;
     }
 
     .centrado {
@@ -20,16 +19,12 @@
     }
 
     .divredondo {
-        border-radius: 30px 30px 30px 30px;
-        -moz-border-radius: 30px 30px 30px 30px;
-        -webkit-border-radius: 30px 30px 30px 30px;
         background-color: white;
         width: 50%;
         height: 80%;
-        margin: 0
     }
 
-    input {
+    .bordeRedondeados {
         -moz-border-radius: 30px;
         -webkit-border-radius: 30px;
         border-radius: 30px;
@@ -104,15 +99,15 @@
 </style>
 
 <body class="centrado fondo">
-    <div class="divredondo sombra centrado">
+<div class="divredondo sombra centrado bordeRedondeados">
         <div>
             <div data-tilt class="nose">
                 <img src="./NUBE.png" alt="" class="">
             </div>
             <br>
-            <input type="text" class="user  " placeholder="CONTRASEÑA">
+<input type="text" class="user  bordeRedondeados" placeholder="CONTRASEÑA">
             <br>
-            <button class="boton ">INGRESAR</button>
+<button class="boton bordeRedondeados">INGRESAR</button>
         </div>
     </div>
     <script src="./jquery/jquery-3.2.1.min.js"></script>
