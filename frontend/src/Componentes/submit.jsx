@@ -9,15 +9,15 @@ class Submit extends Component {
     console.log(this.props)
     const { username, password} = this.props
 
-    fetch("http://localhost:3000/login", {
-          method: "POST",
+      fetch('http://127.0.0.1:3000/login', {
+          method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+              'Content-Type': 'application/json', 'Accept': 'application/json, text/plain, /'
         },
         body: JSON.stringify({
             credentials: {
                 user: username,
-                password    
+            password: password
             }
         }),
     })
