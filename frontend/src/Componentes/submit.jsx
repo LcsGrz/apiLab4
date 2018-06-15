@@ -16,7 +16,7 @@ class Submit extends Component {
             },
             body: JSON.stringify({
                 credentials: {
-                    user: username,
+                    username: username,
                     password: password
                 }
             })

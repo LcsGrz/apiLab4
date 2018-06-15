@@ -66,7 +66,7 @@ app.post("/login", (req, res) => {
   if (!("credentials" in req.body))
     throw "ErrorCliente"
 
-  const q = JSON.parse("{\"user\":\"" + req.body.credentials.user + "\"}")
+  const q = JSON.parse("{\"user\":\"" + req.body.credentials.username + "\"}")
 
   db.collection("usuarios").findOne(q, (err, result) => {
     if (err || result === null)
@@ -89,13 +89,19 @@ app.post("/register", (req, res) => {
             throw "InUseMail"
         })
 
-        db.collection("usuarios").findOne(req.body.credentials.user, (err, result) => { //Verifica que no exista el nick
+        db.collection("usuarios").findOne(req.body.credentials.username, (err, result) => { //Verifica que no exista el nick
             if (result !== null)
               throw "InUseNick"
           })
           req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8) //Encripta
-          
-          db.collection("usuarios").insert("{"+req.body.credentials+",rol:usuario}", (err, result) => { //Inserta el usuario
+          const datos = JSON.stringify({
+            email:req.body.credentials.email,
+                username: req.body.credentials.username,
+                password: req.body.credentials.password,
+                rol:"usuario"
+            })
+            console.log(datos)
+          db.collection("usuarios").insert({datos}, (err, result) => { //Inserta el usuario
             if (err || result === null)
               throw "ErrorCliente"
 
@@ -231,4 +237,4 @@ app.post("/register", (req, res) => {
         res.send(result)
       }
       const Comprobacion = valor => valor && valor !== null && valor !== undefined
-      app.listen(420, "0.0.0.0", () => console.log("listo en 3000..."))
+      app.listen(420, "0.0.0.0", () => console.log("listo en 420..."))
