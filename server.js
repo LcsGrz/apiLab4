@@ -1,5 +1,6 @@
 const bodyParser = require("body-parser")
 const fs = require("fs")
+const cors = require("cors")
 const errores = require("./Errores.js")
 const expressJwt = require("express-jwt")
 const jwt = require("jsonwebtoken")
@@ -26,6 +27,7 @@ MongoClient.connect(url, (err, client) => {
   })
 })
 //------------------------------------------------------------------------------------------------------------MIDDLEWARES
+app.use(cors())
 app.use(bodyParser.urlencoded({
   extended: false
 }))
@@ -61,7 +63,7 @@ app.use((req, res, next) => {
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res) => {
-  console.log('llegue re piola')
+  console.log(req.body.credentials)
   if (!("credentials" in req.body))
     throw "ErrorCliente"
 
@@ -79,6 +81,7 @@ app.post("/login", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Registrar
 app.post("/register", (req, res) => {
+  console.log("register")
   if (!("credentials" in req.body))
     throw "ErrorCliente"
 
@@ -219,4 +222,4 @@ const funkInter = (res, err, result) => {
   res.send(result)
 }
 const Comprobacion = valor => valor && valor !== null && valor !== undefined
-app.listen(3000, () => console.log("listo en 3000..."))
+app.listen(420, "0.0.0.0", () => console.log("listo en 3000..."))

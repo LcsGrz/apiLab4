@@ -6,18 +6,26 @@ class Submit extends Component {
 
     submit = (e) => {
         e.preventDefault()
-        console.log(this.props)
+        //console.log(this.props)
         const { username, password } = this.props
-        fetch('http://127.0.0.1:3000/login', {
+
+        fetch('http://127.0.0.1:420/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "name":"name"
-            }),
-        });
+                credentials: {
+                    user: username,
+                    password: password
+                }
+            })
+        })
+        .then((response) => {
+            console.log(response)
+          });
     }
+
     render() {
         return (
             <button type="submit" onClick={this.submit}>{this.props.texto}</button>
