@@ -57,13 +57,12 @@ app.use((req, res, next) => {
     else if (!roles[req.user.rol][collection][req.method])
       throw "UnauthorizedError"
   }
-  console.log(req.body)
   next()
 })
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res) => {
-  console.log(req.body)
+  console.log(req.body.credentials)
   if (!("credentials" in req.body))
     throw "ErrorCliente"
 
@@ -81,6 +80,7 @@ app.post("/login", (req, res) => {
 })
 //--------------------------------------------------------------------------------------------Registrar
 app.post("/register", (req, res) => {
+  console.log("register")
   if (!("credentials" in req.body))
     throw "ErrorCliente"
 
@@ -221,4 +221,4 @@ const funkInter = (res, err, result) => {
   res.send(result)
 }
 const Comprobacion = valor => valor && valor !== null && valor !== undefined
-app.listen(3000, () => console.log("listo en 3000..."))
+app.listen(420, "0.0.0.0", () => console.log("listo en 3000..."))
