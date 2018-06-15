@@ -17,7 +17,7 @@ let roles
 let collection
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
-  if (err) {
+  if (err) 
     throw "ErrorServer"
   console.log("Connected successfully to server")
   db = client.db(dbName)
@@ -60,6 +60,7 @@ app.use((req, res, next) => {
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res) => {
+  console.log(req.body)
   if (!("credentials" in req.body))
     throw "ErrorCliente"
 
