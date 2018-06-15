@@ -57,6 +57,7 @@ app.use((req, res, next) => {
     else if (!roles[req.user.rol][collection][req.method])
       throw "UnauthorizedError"
   }
+  console.log(req)
   next()
 })
 //------------------------------------------------------------------------------------------------------------Propios
