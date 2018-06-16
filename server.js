@@ -17,7 +17,7 @@ let roles
 let collection
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
-  if (err) 
+  if (err)
     throw "ErrorServer"
   console.log("Connected successfully to server")
   db = client.db(dbName)
@@ -68,7 +68,7 @@ app.post("/login", (req, res) => {
 
   db.collection("usuarios").findOne(q, (err, result) => {
     if (err || result === null)
-       throw "ErrorCliente"
+      throw "ErrorCliente"
 
     if (!bcrypt.compareSync(req.body.credentials.password, result.password))
       throw "UnauthorizedError"
@@ -130,7 +130,6 @@ app.get("/api/:collection", (req, res) => {
 function Transformador(o) {
   /* Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
                                   eso es por que todas las claves especiales de mongo van unicas y empiezan con $
-
   Object.keys(o)[0][0] === "$" --> clave unica empieza con $ */
   const claves = Object.keys(o)
   if ((claves.length === 1) && (claves[0][0] === "$")) {
