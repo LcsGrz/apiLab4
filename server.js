@@ -19,7 +19,8 @@ let collection
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
   if (err)
-    throw "ErrorServer"
+    console.log(err)
+
   console.log("Connected successfully to server")
   db = client.db(dbName)
   db.collection("roles").findOne({}, (err, result) => {
@@ -32,7 +33,6 @@ app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
-
 
 app.use("/api/", expressJwt({
   secret: secret
@@ -50,7 +50,7 @@ app.use("/api/:collection", (req, res, next) => {
   next()
 })
 
-app.use((req, res, next) => {
+app.use((req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
   if (collection !== "register" && collection !== "login") {
     if (req.user === undefined || roles[req.user.rol][collection] === undefined)
       throw "NoTokenNoCollection"
@@ -59,31 +59,35 @@ app.use((req, res, next) => {
   }
   next()
 })
-//-------TEST LPM
-
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
-app.post("/login", (req, res) => {
-  console.log(req.body.credentials)
+app.post("/login", (req, res, next) => {
   if (!("credentials" in req.body))
     throw "ErrorCliente"
 
+  let dato = ""
+  if (Comprobacion(req.body.credentials.username))
+    dato = JSON.parse("{\"username\":\"" + req.body.credentials.username + "\"}")
+  else
+    dato = JSON.parse("{\"email\":\"" + req.body.credentials.email + "\"}")
 
-  const q = JSON.parse("{\"username\":\"" + req.body.credentials.username + "\"}")
-
-  db.collection("usuarios").findOne(q, (err, result) => {
-    if (err || result === null)
-      throw "ErrorCliente"
+  db.collection("usuarios").findOne(dato, (err, result) => {
+    if (err) {
+      console.log(err)
+      return next("ErrorCliente")
+    }
+    if (result === null) {
+      return next("NoExistUser")
+    }
 
     if (!bcrypt.compareSync(req.body.credentials.password, result.password))
-      throw new Error("How can I add new product when no value provided?")
-    //res.send( "UnauthorizedError")
-    console.log("me chupa un huevo e igual paso")
+      return next("!EqualPass")
+
     CrearToken(result, 3600, res)
   })
 })
 //--------------------------------------------------------------------------------------------Registrar
-app.post("/register", (req, res) => { //Verifica que no exista el usuario o el email
+app.post("/register", (req, res, next) => { //Verifica que no exista el usuario o el email
   console.log(req.body)
   if (!("credentials" in req.body))
     throw "ErrorCliente"
@@ -97,31 +101,26 @@ app.post("/register", (req, res) => { //Verifica que no exista el usuario o el e
       }
     ]
   }, (err, result) => { //Verifica que no exista el email
-    console.log("resultado!")
-    console.log(result)
-    if (result !== null)
-      throw "InUseMail"
+    if (result !== null) {
+      if (result.email === req.body.credentials.email)
+        return next("InUseMail")
+      else if (result.username === req.body.credentials.username)
+        return next("InUseNick")
+    }
 
-    console.log("bbb")
-    /*
-        req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8) //Encripta
-        const datos = JSON.stringify({
-          email: req.body.credentials.email,
-          username: req.body.credentials.username,
-          password: req.body.credentials.password,
-          rol: "usuario"
-        })
-        console.log(datos)
-        RegistrarUser(datos)*/
+    RegistrarUser({
+      email: req.body.credentials.email,
+      username: req.body.credentials.username,
+      password: bcrypt.hashSync(req.body.credentials.password, 8),
+      rol: "usuario"
+    }, res, next)
   })
 })
 
-function RegistrarUser(datos) {
-  db.collection("usuarios").insert({
-    datos
-  }, (err, result) => { //Inserta el usuario
+function RegistrarUser(datos, res, next) {
+  db.collection("usuarios").insert(datos, (err, result) => { //Inserta el usuario
     if (err || result === null)
-      throw "ErrorCliente"
+      return next("ErrorCliente")
 
     CrearToken(result, 3600, res)
   })
@@ -135,7 +134,7 @@ const CrearToken = (result, tiempo, res) => {
   })
 }
 //--------------------------------------------------------------------------------------------Ver
-app.get("/api/:collection", (req, res) => {
+app.get("/api/:collection", (req, res, next) => {
   let {
     q,
     p,
@@ -154,7 +153,7 @@ app.get("/api/:collection", (req, res) => {
   Transformador(q)
   db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
     if (err)
-      throw "ErrorCliente"
+      return next("ErrorCliente")
 
     res.send({
       result,
@@ -243,16 +242,18 @@ app.patch("/api/:collection/:id", (req, res) => {
   }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Funcion que mas se repite
-app.use((err, req, res, next) => {
-  console.log("entra a la wea de errores")
-  if (err)
-    res.send(errores[lang][err])
-})
 const funkInter = (res, err, result) => {
   if (err)
-    throw "ErrorCliente"
+    res.send(errores[lang]["ErrorCliente"])
 
   res.send(result)
 }
-const Comprobacion = valor => valor && valor !== null && valor !== undefined
-app.listen(420, "0.0.0.0", () => console.log("listo en 420..."))
+//--------------------------------------------------------------------------------------------
+const Comprobacion = valor => valor && valor !== null && valor !== undefined //Comprueba si el valor existe
+ 
+app.listen(420, "0.0.0.0", () => console.log("listo en 420...")) //Inicia el servidor
+
+app.use((err, req, res, next) => { //Middleware que captura todas las excepciones
+  if (err)
+    res.send(errores[lang][err])
+})
