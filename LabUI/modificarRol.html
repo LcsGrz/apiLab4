@@ -1,0 +1,49 @@
+<html>
+<head>
+
+<link href="https://fonts.googleapis.com/css?family=Fjalla+One|Oswald|Russo+One" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="basico.css">
+    
+
+<meta charset="UTF-8">
+</head>
+<body class="centrado fondo">
+    
+<div class="divredondo sombra centrado bordeRedondeados">
+        <div>
+        <h2>MODIFICAR ROL</h2>
+               
+        <br> ROL:
+        <select id="roles">
+            <option>Ejemplo</option>
+        </select>
+        <br>
+              
+                <br>
+                <br>
+                <h3>Permisos:</h3>
+                <div>
+                <input type="checkbox" name="permisos">Insertar
+                <br>
+                <input type="checkbox" name="permisos">Leer
+                <br>
+                <input type="checkbox" name="permisos">Modificar
+                <br>
+                <input type="checkbox" name="permisos">Eliminar
+                <br>
+                <br>
+            </div>                
+                
+                <button class="botonPequeño bordeRedondeados">GUARDAR</button>
+        </div>
+    </div>
+    <script src="./jquery/jquery-3.2.1.min.js"></script>
+    <!-- Load jQuery first -->
+    <script src="./tilt/tilt.jquery.min.js"></script>
+    <script>
+        $('.js-tilt').tilt({
+            scale: 2.1
+        })
+    </script>
+</body>
+</html>
