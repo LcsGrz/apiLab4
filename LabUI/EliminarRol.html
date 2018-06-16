@@ -1,40 +1,50 @@
+<!DOCTYPE html>
+
 <html>
+
 <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Eliminar Rol</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Oswald|Russo+One" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="basico.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-<link href="https://fonts.googleapis.com/css?family=Fjalla+One|Oswald|Russo+One" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="basico.css">
-    
-
-<meta charset="UTF-8">
 </head>
+
 <body class="centrado fondo">
-    
-<div class="divredondo sombra centrado bordeRedondeados">
+
+    <div class="divredondo sombra bordeRedondeados">
+        <h2 style="text-align: center">ROLES</h2>
+        <br>
         <div>
-        <h2>ELIMINAR ROL</h2>
-               
-        <br> ROL:
-        <select id="roles">
-            <option>Ejemplo</option>
-        </select>
-        <br>
-        <br>
-             USUARIOS AFECTADOS
-             <ul name= "afectados">
-                 <li>ejmplo</li>
-             </ul>                
-                
-             <button class="botonPequeño bordeRedondeados">ELIMINAR SOLO ROL</button>
-                <button style="background-color: red" class="botonPequeño bordeRedondeados">ELIMINAR ROL Y USUARIOS LIGADOS</button>
+<div class="eliminarRol">
+
+    <span class="fa fa-user form-control-feedback icons"></span>
+    <input type="text" class="bordeRedondeados user" placeholder="NOMBRE">
+    <br>
+    <br>
+</div>
         </div>
+
+        <div class="rolAfectados">
+            USUARIOS AFECTADOS
+            <ul name="afectados">
+                <li>afectado 1</li>
+                <li>afectado 2</li>
+                <li>afectado 3</li>
+                <li>afectado 4</li>
+                <li>afectado 5</li>
+                <li>afectado 6</li>
+            </ul>
+        </div>
+        <button class="boton botonNormal botonRolEliminar">ELIMINAR</button>
+
     </div>
-    <script src="./jquery/jquery-3.2.1.min.js"></script>
-    <!-- Load jQuery first -->
-    <script src="./tilt/tilt.jquery.min.js"></script>
-    <script>
-        $('.js-tilt').tilt({
-            scale: 2.1
-        })
-    </script>
+    
 </body>
+
 </html>

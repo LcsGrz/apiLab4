@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Iniciar Sesion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Oswald|Russo+One" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="basico.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body class="centrado fondo">
+    <div class="divredondo sombra centrado bordeRedondeados">
+        <div>
+            <div data-tilt class="img">
+                <img src="./NUBE.png">
+            </div>
+            <br>
+            <span class="fa fa-user form-control-feedback icons"></span>
+            <input type="text" class="user  bordeRedondeados" placeholder="USUARIO">
+            <br>
+            <br>
+            <span class="fa fa-lock form-control-feedback icons"></span>
+            <input type="text" class="user  bordeRedondeados" placeholder="CONTRASEÑA">
+            <br>
+            <br>
+            <button class="boton botonNormal bordeRedondeados">INGRESAR</button>
+            <br>
+            <div>
+                <a href="url" class="links">REGISTRAR</a>
+                <a href="url" class="links">OLVIDE MI CONTRASEÑA</a>
+            </div>
+            <br>
+        </div>
+    </div>
+    <script src="./jquery/jquery-3.2.1.min.js"></script>
+    <!-- Load jQuery first -->
+    <script src="./tilt/tilt.jquery.min.js"></script>
+    <script>
+        $('.js-tilt').tilt({
+            scale: 2.1
+        })
+    </script>
+</body>
+
+</html>
