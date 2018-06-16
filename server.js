@@ -161,7 +161,6 @@ app.get("/api/:collection", (req, res, next) => {
     })
   })
 })
-
 function Transformador(o) {
   /* Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
                                   eso es por que todas las claves especiales de mongo van unicas y empiezan con $
@@ -177,7 +176,6 @@ function Transformador(o) {
     })
   }
 }
-
 function transToken(s) {
   if (/^\/.*\/$/.test(s))
     return new RegExp(s.substring(1, s.length - 1))
