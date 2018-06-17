@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import './App.css';
-import Formis from './Componentes/formulario';
-
+import Registrar from './Componentes/Registrar';
+import Login from './Componentes/Login';
 class App extends Component {
   render() {
     return (
-      <Formis  />
+      <Login /> 
+      // cambiar entre login y registrar para ir probando
     );
   }
 }

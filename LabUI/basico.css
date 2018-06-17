@@ -55,7 +55,7 @@
     display: -webkit-flex;
     display: -moz-box;
     display: -ms-flexbox;
-    display: flex;
+    display: block;
     justify-content: center;
     align-items: center;
     -webkit-transition: all 0.4s;
@@ -175,3 +175,15 @@
     clear: both;
     margin-left: 30%;
 }
+
+.links {
+    float: left;
+
+}
+
+p {
+    color: #666666;
+    margin-left: 5px;
+    margin-right: 5px;
+font-size: 15px;
+}   

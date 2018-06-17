@@ -47,7 +47,7 @@ app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token 
     else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
       throw "UnauthorizedError"
   }
-  
+
   next()
 })
 //------------------------------------------------------------------------------------------------------------
@@ -66,7 +66,6 @@ app.post("/login", (req, res, next) => {
 
   db.collection("usuarios").findOne(dato, (err, result) => {
     if (err) {
-      console.log(err)
       return next("ErrorCliente")
     }
     if (result === null)
@@ -74,7 +73,6 @@ app.post("/login", (req, res, next) => {
 
     if (!bcrypt.compareSync(req.body.credentials.password, result.password))
       return next("!EqualPass")
-
     CrearToken(result, 3600, res)
   })
 })
@@ -122,6 +120,7 @@ const CrearToken = (result, tiempo, res) => {
   const token = jwt.sign(result, secret, {
     expiresIn: tiempo
   })
+  
   res.send({
     token
   })

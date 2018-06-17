@@ -1,0 +1,205 @@
+* {
+    font-family: 'Oswald', sans-serif;
+}
+*{ margin: 0px;
+padding: 0px}
+.fondo {
+    background: linear-gradient(-135deg, #c850c0, #4158d0);
+    width: 100%;
+    height: 100%;
+    margin-top: 15%;
+    margin-bottom: 15%;
+}
+
+.centrado {    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.centerMargin{
+    display: block; 
+    margin: 15px auto;
+}
+
+.divredondo {        
+    padding-top:30px;
+    padding-bottom: 30px;
+    background-color: white;
+    width: 50%;
+    height: 480px;
+}
+
+.bordeRedondeados {
+    -moz-border-radius: 30px;
+    -webkit-border-radius: 30px;
+    border-radius: 30px;
+    border-style: none;
+    outline: none;
+}
+::placeholder {
+    color: rgb(185, 185, 185);
+    /* opacity: 1; */
+}
+
+input:focus {
+    border:1px solid #b146aa;
+    /* background-color:#F0F8FF; */
+    }
+.bordeRedondeadosBanner {
+    
+     border-top-left-radius: 25px;
+     border-top-right-radius: 25px;
+    border-style: none;
+}
+.sombra {
+    -webkit-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
+}
+
+.blur {
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+}
+
+.boton {
+    color: #fff;
+    font-size: 18px;
+    border-radius: 25px;
+    background: #57b846;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+    cursor: pointer;
+    border-style: none;
+    width: 29%;
+    height: 40px;
+}
+.botonNormal {
+    font-size: 30px;
+    width: 300px;
+    height: 50px;
+    margin-left: 3%;
+}
+.botonPequeño {
+    font-size: 15px;
+    width: 185px;
+    height: 35px;
+    margin-left: 20%;
+}
+
+.boton:hover {
+    background: rgb(66, 165, 46);
+}
+
+.user {
+    height: 50px;
+    font: 20px Ms Sans Serif;
+    padding-left: 25px;
+    color: #666666;
+    background: #e6e6e6;
+    width: 40%  ;
+    padding-right: 25px;
+    display: block;
+    margin: 15px auto;
+}
+
+.img {
+    margin-left: 10%;
+    display: inline;
+    position: relative;
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.icons{
+    width: 15px;
+    height: 15px;
+}
+.divbanner{
+    position: absolute;
+    background:linear-gradient(-135deg, #c850c0, #4158d0);
+    width: 50%;
+    height: 10%;    
+    margin-top: 0%; 
+    font-size: 30px;
+    color: #fff;
+}
+.divMarginBanner {
+    margin-top: 10%;
+}
+.botonRol{
+    clear:both;
+    margin-left: 20%;
+}
+.user{
+    text-align: center;
+}
+.check{
+        text-align: left;
+        font-size: 150%;
+        float: left;
+        padding-left: 7%;
+}
+.userRol{
+  float: left;
+  margin-top: 15%;
+}
+.eliminarRol{
+    float: left;
+    margin-left: 15%;
+    margin-top: 10%;
+}
+#roles {
+    width: 100%;
+}
+.rolAfectados{
+    float: left;
+    text-align: left;
+    padding-left: 10%;
+
+}
+.botonRolEliminar {
+    clear: both;
+    margin-left: 30%;
+}
+.userSearch{
+    float: left;
+    margin-top: 10%;
+    margin-left: 15%;
+}
+.resultBuscarUsuario{
+    float: left;
+    text-align: left;
+    padding-left: 5%;
+
+}
+.botonUserBuscar {
+    clear: both;
+    margin-left: 30%;
+}
+.links {
+    float: left;
+    font: 22px Ms Sans Serif;
+    padding: 0px 4px;
+    font-size: 0.8em;
+    text-decoration:none; 
+    color: #4158d0  
+}
+
+p {
+    color: #666666;
+    font-size: 15px;
+}
