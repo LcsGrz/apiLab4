@@ -3,43 +3,45 @@ import styled from 'styled-components';
 import './basico.css'
 
 class Submit extends Component {
-
     submit = (e) => {
-        e.preventDefault()
-        console.log(this.props.password2)
-        if (this.props.password2 === undefined) {
-            const { username, password } = this.props
+        e.preventDefault()  
+        const options = {
+            'Create Account': this.registrar,
+            'Login': this.login,
+        }
+        console.log(this.props.texto)
+        console.log(options[this.props.texto])
+        return (options[this.props.texto]);        
+    }
+    login = () =>{
+        const { username, password } = this.props
 
-            fetch('http://127.0.0.1:420/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    credentials: {
-                        username,
-                        password
-                    }
-                })
+        fetch('http://127.0.0.1:420/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                credentials: {
+                    username,
+                    password
+                }
             })
-                .then((response) => {
-                    response.json().then(function (data) {
-                        console.log(data.token);
-                        // this.setState({token: data.token})
-                    });
-
-                })
-                .catch((error) => {
-                    console.error(error);
+        })
+            .then((response) => {
+                response.json().then(function (data) {
+                    console.log("Al token Perro: "+data.token);
+                    // this.setState({token: data.token})
                 });
-            ;
-        }
-        else{
-            this.registrar();
-        }
+
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        ;
     }
     registrar = () => {
-        const { username, password,password2, email } = this.props
+        const { username, password,password2, email ,dni } = this.props
         if(password !== password2){
             alert("Las contraseñas no coinciden")
             return ;
@@ -53,7 +55,8 @@ class Submit extends Component {
                 credentials: {
                     username,
                     password,
-                    email
+                    email,
+                    dni
                 }
             })
         })
