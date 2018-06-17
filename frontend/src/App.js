@@ -4,7 +4,7 @@ import Login from './Componentes/Login';
 class App extends Component {
   render() {
     return (
-      <Registrar /> 
+      <Login /> 
       // cambiar entre login y registrar para ir probando
     );
   }

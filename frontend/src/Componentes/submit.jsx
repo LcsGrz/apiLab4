@@ -4,14 +4,12 @@ import './basico.css'
 
 class Submit extends Component {
     submit = (e) => {
-        e.preventDefault()  
+        e.preventDefault()
         const options = {
-            'Create Account': this.registrar,
-            'Login': this.login,
-        }
-        console.log(this.props.texto)
-        console.log(options[this.props.texto])
-        return (options[this.props.texto]);        
+            'Create Account': this.registrar(),
+            'Login': this.registrar(),
+        }  
+        return (options[this.props.texto]); 
     }
     login = () =>{
         const { username, password } = this.props
@@ -42,6 +40,7 @@ class Submit extends Component {
     }
     registrar = () => {
         const { username, password,password2, email ,dni } = this.props
+        
         if(password !== password2){
             alert("Las contraseñas no coinciden")
             return ;
