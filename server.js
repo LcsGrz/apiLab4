@@ -15,7 +15,7 @@ const secret = "palabrasecreta"
 let lang = "ES"
 let db = ""
 let roles
-  let emailRegex = /^[0-9a-zA-Z]*@[0-9a-zA-Z]{3,10}\.[0-9a-zA-Z]{2,5}$/
+let emailRegex = /^[0-9a-zA-Z]*@[0-9a-zA-Z]{3,10}\.[0-9a-zA-Z]{2,5}$/
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
   if (err)
@@ -41,12 +41,13 @@ app.use("/api/", expressJwt({
 app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
   let collection = req.params.collection
 
-if (!(req.user.rol === "admin")){
-  if ( (req.user === undefined) || roles[req.user.rol][collection] === undefined)
-    throw "NoTokenNoCollection"
-  else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
-    throw "UnauthorizedError"
-}
+  if (!(req.user.rol === "admin")) {
+    if ((req.user === undefined) || roles[req.user.rol][collection] === undefined)
+      throw "NoTokenNoCollection"
+    else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
+      throw "UnauthorizedError"
+  }
+  
   next()
 })
 //------------------------------------------------------------------------------------------------------------
