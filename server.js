@@ -51,6 +51,7 @@ app.use("/api/:collection", (req, res, next) => {
 })
 
 app.use((req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
+  next()
   if (collection !== "register" && collection !== "login") {
     if (req.user === undefined || roles[req.user.rol][collection] === undefined)
       throw "NoTokenNoCollection"
@@ -132,7 +133,7 @@ const CrearToken = (result, tiempo, res) => {
   })
 }
 //--------------------------------------------------------------------------------------------Ver
-app.get("/api/:collection", (req, res, next) => {
+app.get("/:collection", (req, res, next) => {
   let {
     q,
     p,
@@ -147,12 +148,12 @@ app.get("/api/:collection", (req, res, next) => {
   } catch (Exception) {
     throw "BadJSON"
   }
-
   Transformador(q)
   db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
     if (err)
       return next("ErrorCliente")
-
+    
+    result.map(x=>console.log(x))
     res.send({
       result,
       next: "/" + req.params.collection + "?" + ((Comprobacion(q)) ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l

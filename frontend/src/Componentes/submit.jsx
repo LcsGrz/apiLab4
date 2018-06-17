@@ -7,7 +7,7 @@ class Submit extends Component {
         e.preventDefault()
         const options = {
             'Create Account': this.registrar(),
-            'Login': this.registrar(),
+            'Login': this.login(),
         }  
         return (options[this.props.texto]); 
     }

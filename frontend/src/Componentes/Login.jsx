@@ -37,9 +37,9 @@ class formulario extends Component {
                 <TextBox type="password" placeholder="Password" img="pass" colorF="green" colorT="red" get={this.getpassword} />
                 <Submit texto="Login" username={this.state.username} password={this.state.password} />
                 <div class="centrado">
-                    <Link url="registar" texto="REGISTRAR   " />
+                    <Link url="registar" texto="Create Account" />
                     <p> / </p>
-                    <Link url="url" texto="OLVIDE MI CONTRASEÑA" />
+                    <Link url="url" texto="Forgot?" />
                 </div>
             </div>
         );
