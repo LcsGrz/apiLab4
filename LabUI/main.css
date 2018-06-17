@@ -1,0 +1,258 @@
+/*//////////////////////////////////////////////////////////////////
+[ FONT ]*/
+
+@font-face {
+  font-family: Poppins-Regular;
+  src: url('../fonts/poppins/Poppins-Regular.ttf'); 
+}
+
+@font-face {
+  font-family: Poppins-Bold;
+  src: url('../fonts/poppins/Poppins-Bold.ttf'); 
+}
+
+@font-face {
+  font-family: Poppins-Medium;
+  src: url('../fonts/poppins/Poppins-Medium.ttf'); 
+}
+
+@font-face {
+  font-family: Montserrat-Bold;
+  src: url('../fonts/montserrat/Montserrat-Bold.ttf'); 
+}
+
+/*//////////////////////////////////////////////////////////////////
+[ RESTYLE TAG ]*/
+
+* {
+	margin: 0px; 
+	padding: 0px; 
+	box-sizing: border-box;
+}
+
+body, html {
+	height: 100%;
+	font-family: Poppins-Regular, sans-serif;
+}
+
+/*---------------------------------------------*/
+a {
+	font-family: Poppins-Regular;
+	font-size: 14px;
+	line-height: 1.7;
+	color: #666666;
+	margin: 0px;
+	transition: all 0.4s;
+	-webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+}
+
+a:focus {
+	outline: none !important;
+}
+
+a:hover {
+	text-decoration: none;
+  color: #57b846;
+}
+
+
+
+ul, li {
+	margin: 0px;
+	list-style-type: none;
+}
+
+
+/*---------------------------------------------*/
+
+
+/*---------------------------------------------*/
+button {
+	outline: none !important;
+	border: none;
+	background: transparent;
+}
+
+button:hover {
+	cursor: pointer;
+}
+
+iframe {
+	border: none !important;
+}
+
+
+/*//////////////////////////////////////////////////////////////////
+[ Utility ]*/
+.txt1 {
+  font-family: Poppins-Regular;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #999999;
+}
+
+.txt2 {
+  font-family: Poppins-Regular;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #666666;
+}
+
+
+/*//////////////////////////////////////////////////////////////////
+[ login ]*/
+
+.fondo {
+  width: 100%;
+  height:1000px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  background: #9053c7;
+  background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
+  background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
+  background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
+  background: linear-gradient(-135deg, #c850c0, #4158d0);
+}
+
+.contenedor{
+	border: solid 3px;
+	width:80%;
+	border-radius:30px;
+	background-color:#fff;
+}
+.cabecera{
+	text-align:center;
+	background-color:#fff;
+	border-radius:30px;
+}
+.menu{
+	border: solid 1px;
+	float:left;
+	width:20%;
+	height:100%;
+	background-color:#fff;
+	
+}
+.esquinero1{
+	border: solid 1px;
+	width:100%;
+	float:left;	
+	height:100px;
+}
+
+.menuAdmin{
+	border: solid 1px;
+	width:100%;
+	float:left;	
+	height:100%;
+}
+.algo{
+	width:100%;
+	height:4px;
+	float:left;	
+	border: solid 1px;
+}
+.menuUsuario{
+	border: solid 1px;
+	width:100%;
+	float:left;	
+	height:33%;
+	
+}
+.listaMenu li{
+	padding:4px;
+	margin-top:3px;
+}
+.esquinero2{
+	border: solid 1px;
+	width:100%;
+	float:left;	
+	height:100px;
+}
+.secciones{
+	width:80%;
+	border: solid 1px;
+	float:right;
+	height:497px;
+}
+
+.pieDePagina{
+	clear:both;
+	text-align:center;
+	border-radius:30px;	
+}
+.bordeRedondeados {
+    -moz-border-radius: 30px;
+    -webkit-border-radius: 30px;
+    border-radius: 30px;
+    border-style: none;
+}
+
+.sombra {
+    -webkit-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
+}
+
+.blur {
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+}
+
+.boton {
+    font-size: 20px;
+    color: #fff;
+    width: 100%;
+    height: 30%;
+    border-radius: 25px;
+    background: #57b846;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+    cursor: pointer;
+    border-style: none;	
+}
+.boton2 {
+    font-size: 20px;
+    color: #fff;
+    width: 200px;
+    height: 30%;
+    border-radius: 25px;
+    background: #57b846;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+    cursor: pointer;
+    border-style: none;	
+}
+.boton:hover, .boton2:hover {
+    background: rgb(66, 165, 46);
+}
+.botonesPie th{
+	padding:6px;
+	margin-top:3px;
+}
