@@ -1,19 +1,18 @@
 * {
     font-family: 'Oswald', sans-serif;
-    /* font-family: 'Fjalla One', sans-serif;
-    font-family: 'Russo One', sans-serif;*/
 }
 *{ margin: 0;}
 .fondo {
     background: linear-gradient(-135deg, #c850c0, #4158d0);
     width: 100%;
     height: 100%;
+    margin-top: 10%;
 }
 
 .centrado {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center;    
 }
 
 .divredondo {
@@ -28,7 +27,12 @@
     border-radius: 30px;
     border-style: none;
 }
-
+.bordeRedondeadosBanner {
+    
+     border-top-left-radius: 25px;
+     border-top-right-radius: 25px;
+    border-style: none;
+}
 .sombra {
     -webkit-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 0px 0px 30px -5px rgba(0, 0, 0, 0.75);
@@ -44,10 +48,7 @@
 }
 
 .boton {
-    font-size: 30px;
     color: #fff;
-    width: 250px;
-    height: 50px;
     border-radius: 25px;
     background: #57b846;
     display: -webkit-box;
@@ -63,6 +64,18 @@
     transition: all 0.4s;
     cursor: pointer;
     border-style: none;
+}
+.botonNormal {
+    font-size: 30px;
+    width: 300px;
+    height: 50px;
+    margin-left: 3%;
+}
+.botonPequeño {
+    font-size: 15px;
+    width: 185px;
+    height: 35px;
+    margin-left: 20%;
 }
 
 .boton:hover {
@@ -81,8 +94,8 @@
     padding-right: 25px;
 }
 
-.nose {
-
+.img {
+    margin-left: 10%;
     display: inline;
     position: relative;
     content: "";
@@ -90,7 +103,75 @@
     display: table;
 }
 
-.labimg {
-    height: "";
-    width "";
+.icons{
+    width: 15px;
+    height: 15px;
+}
+.links{
+    color: #666666;
+    margin-left: 5%;
+    padding-left: 5%;
+}
+
+.divbanner{
+    position: absolute;
+        background:linear-gradient(-135deg, #c850c0, #4158d0);
+    width: 50%;
+    height: 10%;    
+    margin-top: 0%; 
+    font-size: 30px;
+    color: #fff;
+}
+.divMarginBanner {
+    margin-top: 10%;
+}
+.botonRol{
+    clear:both;
+    margin-left: 20%;
+}
+.user{
+    text-align: center;
+}
+.check{
+        text-align: left;
+        font-size: 150%;
+        float: left;
+        padding-left: 7%;
+}
+.userRol{
+  float: left;
+  margin-top: 15%;
+}
+.eliminarRol{
+    float: left;
+    margin-left: 15%;
+    margin-top: 10%;
+}
+#roles {
+    width: 100%;
+}
+.rolAfectados{
+    float: left;
+    text-align: left;
+    padding-left: 10%;
+
+}
+.botonRolEliminar {
+    clear: both;
+    margin-left: 30%;
+}
+.userSearch{
+    float: left;
+    margin-top: 10%;
+    margin-left: 15%;
+}
+.resultBuscarUsuario{
+    float: left;
+    text-align: left;
+    padding-left: 5%;
+
+}
+.botonUserBuscar {
+    clear: both;
+    margin-left: 30%;
 }

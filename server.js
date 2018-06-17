@@ -18,8 +18,9 @@ let roles
 let collection
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
-  if (err) 
-    throw "ErrorServer"
+  if (err)
+    console.log(err)
+
   console.log("Connected successfully to server")
   db = client.db(dbName)
   db.collection("roles").findOne({}, (err, result) => {
@@ -32,7 +33,6 @@ app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
-
 
 app.use("/api/", expressJwt({
   secret: secret
@@ -50,35 +50,81 @@ app.use("/api/:collection", (req, res, next) => {
   next()
 })
 
+app.use((req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
+  if (collection !== "register" && collection !== "login") {
+    if (req.user === undefined || roles[req.user.rol][collection] === undefined)
+      throw "NoTokenNoCollection"
+    else if (!roles[req.user.rol][collection][req.method])
+      throw "UnauthorizedError"
+  }
+  next()
+})
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
-app.post("/login", (req, res) => {
-  
-  if (!("credentials" in req.body)){
-    throw "ErrorCliente"}
-  
-  const q = JSON.parse("{\"user\":\"" + req.body.credentials.user + "\"}")
-  db.collection("usuarios").findOne(q, (err, result) => {
-    if (err || result === null)
-       throw "ErrorCliente"
+app.post("/login", (req, res, next) => {
+  if (!("credentials" in req.body))
+    throw "ErrorCliente"
+
+  let dato = ""
+  if (Comprobacion(req.body.credentials.username))
+    dato = JSON.parse("{\"username\":\"" + req.body.credentials.username + "\"}")
+  else
+    dato = JSON.parse("{\"email\":\"" + req.body.credentials.email + "\"}")
+
+  db.collection("usuarios").findOne(dato, (err, result) => {
+    if (err) {
+      console.log(err)
+      return next("ErrorCliente")
+    }
+    if (result === null) {
+      return next("NoExistUser")
+    }
+
     if (!bcrypt.compareSync(req.body.credentials.password, result.password))
-      throw "UnauthorizedError"
+      return next("!EqualPass")
+
     CrearToken(result, 3600, res)
   })
 })
 //--------------------------------------------------------------------------------------------Registrar
-app.post("/register", (req, res) => {
+app.post("/register", (req, res, next) => { //Verifica que no exista el usuario o el email
+  console.log(req.body)
   if (!("credentials" in req.body))
     throw "ErrorCliente"
-  req.body.credentials.password = bcrypt.hashSync(req.body.credentials.password, 8)
-  db.collection("usuarios").insert(req.body.credentials, (err, result) => {
-    if (err || result === null)
-      throw "ErrorCliente"
 
-    CrearToken(result, 3600, res)
+  db.collection("usuarios").findOne({
+    $or: [{
+        "email": req.body.credentials.email
+      },
+      {
+        "username": req.body.credentials.username
+      }
+    ]
+  }, (err, result) => { //Verifica que no exista el email
+    if (result !== null) {
+      if (result.email === req.body.credentials.email)
+        return next("InUseMail")
+      else if (result.username === req.body.credentials.username)
+        return next("InUseNick")
+    }
+
+    RegistrarUser({
+      email: req.body.credentials.email,
+      username: req.body.credentials.username,
+      password: bcrypt.hashSync(req.body.credentials.password, 8),
+      rol: "usuario"
+    }, res, next)
   })
 })
 
+function RegistrarUser(datos, res, next) {
+  db.collection("usuarios").insert(datos, (err, result) => { //Inserta el usuario
+    if (err || result === null)
+      return next("ErrorCliente")
+
+    CrearToken(result, 3600, res)
+  })
+}
 const CrearToken = (result, tiempo, res) => {
   const token = jwt.sign(result, secret, {
     expiresIn: tiempo
@@ -88,7 +134,7 @@ const CrearToken = (result, tiempo, res) => {
   })
 }
 //--------------------------------------------------------------------------------------------Ver
-app.get("/api/:collection", (req, res) => {
+app.get("/api/:collection", (req, res, next) => {
   let {
     q,
     p,
@@ -107,7 +153,7 @@ app.get("/api/:collection", (req, res) => {
   Transformador(q)
   db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
     if (err)
-      throw "ErrorCliente"
+      return next("ErrorCliente")
 
     res.send({
       result,
@@ -115,7 +161,6 @@ app.get("/api/:collection", (req, res) => {
     })
   })
 })
-
 function Transformador(o) {
   /* Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
                                   eso es por que todas las claves especiales de mongo van unicas y empiezan con $
@@ -131,7 +176,6 @@ function Transformador(o) {
     })
   }
 }
-
 function transToken(s) {
   if (/^\/.*\/$/.test(s))
     return new RegExp(s.substring(1, s.length - 1))
@@ -196,25 +240,18 @@ app.patch("/api/:collection/:id", (req, res) => {
   }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Funcion que mas se repite
-app.use((err, req, res, next) => {
-  if (err)
-    res.send(errores[lang][err])
-})
 const funkInter = (res, err, result) => {
   if (err)
-    throw "ErrorCliente"
+    res.send(errores[lang]["ErrorCliente"])
 
   res.send(result)
 }
-const Comprobacion = valor => valor && valor !== null && valor !== undefined
+//--------------------------------------------------------------------------------------------
+const Comprobacion = valor => valor && valor !== null && valor !== undefined //Comprueba si el valor existe
+ 
+app.listen(420, "0.0.0.0", () => console.log("listo en 420...")) //Inicia el servidor
 
-app.use((req, res, next) => {
-  if (collection !== "register" && collection !== "login") {
-    if (req.user === undefined || roles[req.user.rol][collection] === undefined)
-      throw "NoTokenNoCollection"
-    else if (!roles[req.user.rol][collection][req.method])
-      throw "UnauthorizedError"
-  }
-  next()
+app.use((err, req, res, next) => { //Middleware que captura todas las excepciones
+  if (err)
+    res.send(errores[lang][err])
 })
-app.listen(3000, () => console.log("listo en 3000..."))

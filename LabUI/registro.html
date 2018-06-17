@@ -1,35 +1,53 @@
-<link href="https://fonts.googleapis.com/css?family=Fjalla+One|Oswald|Russo+One" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="basico.css">
-    
+<!DOCTYPE html>
+<html>
 
-<meta charset="UTF-8">
-<body class="centrado fondo">
-    
-<div class="divredondo sombra centrado bordeRedondeados">
-        <div>
-            <div data-tilt class="nose">
-                <img src="./NUBE.png" alt="" class="">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Registro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Oswald|Russo+One" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="basico.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+</head>
+
+<body class="fondo">
+    <div class="centrado">
+        <div class="divredondo sombra bordeRedondeados">
+            <header class="divbanner sombra centrado bordeRedondeadosBanner">
+                <span>API Laboratorio IV</span>
+            </header>
+            <div class="centrado">
+                <div class="divMarginBanner">
+                    <br>
+                    <span class="fa fa-envelope form-control-feedback icons"></span>
+                    <input type="text" class="user  bordeRedondeados" placeholder="EMAIL">
+                    <br>
+                    <br>
+                    <span class="fa fa-user form-control-feedback icons"></span>
+                    <input type="text" class="user  bordeRedondeados" placeholder="USUARIO">
+                    <br>
+                    <br>
+                    <span class="fa fa-lock form-control-feedback icons"></span>
+                    <input type="password" class="user  bordeRedondeados" placeholder="CONTRASEÑA">
+                    <br>
+                    <br>
+                    <span class="fa fa-lock form-control-feedback icons"></span>
+                    <input type="password" class="user  bordeRedondeados" placeholder="REPETIR CONTRASEÑA">
+                    <br>
+                    <br>
+                    <div>
+                        <button class="boton botonNormal bordeRedondeados">REGISTRARSE</button>
+                    </div>
+                </div>
             </div>
-            <br>
-            <input type="text" class="user  bordeRedondeados" placeholder="EMAIL">
-                        <br>
-            <br>
-<input type="text" class="user  bordeRedondeados" placeholder="USUARIO">
-            <br>
-            <br>
-<input type="text" class="user  bordeRedondeados" placeholder="CONTRASEÑA">
-            <br>
-            <br>
-<input type="text" class="user  bordeRedondeados" placeholder="REPETIR CONTRASEÑA">
-            <br>
-            <br>
-<div>  
-<button class="boton bordeRedondeados">REGISTRARSE</button>
-</div>
         </div>
     </div>
+
     <script src="./jquery/jquery-3.2.1.min.js"></script>
-    <!-- Load jQuery first -->
     <script src="./tilt/tilt.jquery.min.js"></script>
     <script>
         $('.js-tilt').tilt({
@@ -37,3 +55,5 @@
         })
     </script>
 </body>
+
+</html>

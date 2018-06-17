@@ -29,6 +29,31 @@ const errores = {
       "error": true,
       "trace": "ERROR: JSON not compatible.",
       "status": 666
+    },
+    "InUseNick": {
+      "error": true,
+      "trace": "ERROR: Nick not available.",
+      "status": 254
+    },
+    "InUseMail": {
+      "error": true,
+      "trace": "ERROR: The email entered corresponds to a user.",
+      "status": 255
+    },
+    "NoCredentials": {
+      "error": true,
+      "trace": "ERROR: No credentials were entered.",
+      "status": 255
+    },
+    "NoExistUser": {
+      "error": true,
+      "trace": "ERROR: Username does not exist.",
+      "status": 300
+    },
+    "!EqualPass": {
+      "error": true,
+      "trace": "ERROR: Incorrect password.",
+      "status": 301
     }
   },
   "ES": {
@@ -61,6 +86,31 @@ const errores = {
       "error": true,
       "trace": "ERROR: JSON no compatible.",
       "status": 666
+    },
+    "InUseNick": {
+      "error": true,
+      "trace": "ERROR: Nick no disponible.",
+      "status": 254
+    },
+    "InUseMail": {
+      "error": true,
+      "trace": "ERROR: El email ingresado corresponde a un usuario.",
+      "status": 255
+    },
+    "NoCredentials": {
+      "error": true,
+      "trace": "ERROR: No se ingresaron credenciales.",
+      "status": 255
+    },
+    "NoExistUser": {
+      "error": true,
+      "trace": "ERROR: El nick/email ingresado no coresponde con ningun usuario.",
+      "status": 300
+    },
+    "!EqualPass": {
+      "error": true,
+      "trace": "ERROR: contraseña incorrecta.",
+      "status": 301
     }
   }
 }
