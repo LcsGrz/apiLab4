@@ -64,7 +64,7 @@ const errores = {
     },
     "UnauthorizedError": {
       "error": true,
-      "trace": "Token invalido...",
+      "trace": "No puede acceder a dicha funcion",
       "status": 401
     },
     "ErrorMediaTipo": {
