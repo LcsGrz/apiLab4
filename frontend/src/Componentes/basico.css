@@ -1,24 +1,32 @@
 * {
     font-family: 'Oswald', sans-serif;
 }
-*{ margin: 0;}
+*{ margin: 0px;
+padding: 0px}
 .fondo {
     background: linear-gradient(-135deg, #c850c0, #4158d0);
     width: 100%;
     height: 100%;
-    margin-top: 10%;
+    margin-top: 15%;
+    margin-bottom: 15%;
 }
 
-.centrado {
+.centrado {    
     display: flex;
     align-items: center;
-    justify-content: center;    
+    justify-content: center;
+}
+.centerMargin{
+    display: block; 
+    margin: 15px auto;
 }
 
-.divredondo {
+.divredondo {        
+    padding-top: 20px;
+    padding-bottom: 20px;
     background-color: white;
     width: 50%;
-    height: 80%;
+    height: 300px;
 }
 
 .bordeRedondeados {
@@ -26,7 +34,17 @@
     -webkit-border-radius: 30px;
     border-radius: 30px;
     border-style: none;
+    outline: none;
 }
+::placeholder {
+    color: rgb(185, 185, 185);
+    /* opacity: 1; */
+}
+
+input:focus {
+    border:1px solid #b146aa;
+    /* background-color:#F0F8FF; */
+    }
 .bordeRedondeadosBanner {
     
      border-top-left-radius: 25px;
@@ -49,13 +67,14 @@
 
 .boton {
     color: #fff;
+    font-size: 18px;
     border-radius: 25px;
     background: #57b846;
     display: -webkit-box;
     display: -webkit-flex;
     display: -moz-box;
     display: -ms-flexbox;
-    display: block;
+    display: flex;
     justify-content: center;
     align-items: center;
     -webkit-transition: all 0.4s;
@@ -64,6 +83,8 @@
     transition: all 0.4s;
     cursor: pointer;
     border-style: none;
+    width: 29%;
+    height: 40px;
 }
 .botonNormal {
     font-size: 30px;
@@ -83,15 +104,15 @@
 }
 
 .user {
-    background: url(../src/user.svg) left no-repeat;
-    background-size: 35px 35px;
-    height: 30px;
+    height: 50px;
     font: 20px Ms Sans Serif;
-    padding-left: 35px;
+    padding-left: 25px;
     color: #666666;
     background: #e6e6e6;
-    width: 50 px;
+    width: 40%  ;
     padding-right: 25px;
+    display: block;
+    margin: 15px auto;
 }
 
 .img {
@@ -107,15 +128,9 @@
     width: 15px;
     height: 15px;
 }
-.links{
-    color: #666666;
-    margin-left: 5%;
-    padding-left: 5%;
-}
-
 .divbanner{
     position: absolute;
-        background:linear-gradient(-135deg, #c850c0, #4158d0);
+    background:linear-gradient(-135deg, #c850c0, #4158d0);
     width: 50%;
     height: 10%;    
     margin-top: 0%; 
@@ -175,15 +190,16 @@
     clear: both;
     margin-left: 30%;
 }
-
 .links {
     float: left;
-
+    font: 22px Ms Sans Serif;
+    padding: 0px 4px;
+    font-size: 0.8em;
+    text-decoration:none; 
+    color: #4158d0  
 }
 
 p {
     color: #666666;
-    margin-left: 5px;
-    margin-right: 5px;
-font-size: 15px;
-}   
+    font-size: 15px;
+}

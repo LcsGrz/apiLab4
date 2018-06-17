@@ -70,19 +70,16 @@ app.post("/login", (req, res, next) => {
     dato = JSON.parse("{\"username\":\"" + req.body.credentials.username + "\"}")
   else
     dato = JSON.parse("{\"email\":\"" + req.body.credentials.email + "\"}")
-
   db.collection("usuarios").findOne(dato, (err, result) => {
     if (err) {
-      console.log(err)
       return next("ErrorCliente")
     }
+    console.log(result  )
     if (result === null) {
       return next("NoExistUser")
     }
-
     if (!bcrypt.compareSync(req.body.credentials.password, result.password))
       return next("!EqualPass")
-
     CrearToken(result, 3600, res)
   })
 })
@@ -129,6 +126,7 @@ const CrearToken = (result, tiempo, res) => {
   const token = jwt.sign(result, secret, {
     expiresIn: tiempo
   })
+  
   res.send({
     token
   })

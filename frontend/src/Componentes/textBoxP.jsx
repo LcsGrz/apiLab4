@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-
 import password from '../Imagenes/password.svg';
 import usuario from '../Imagenes/user.svg';
+
+import './basico.css';
 
 const imagen = { "user": usuario, "pass": password };
 
@@ -26,15 +27,16 @@ class textBoxP extends Component {
   }
 
   render() {
-    const value = "aaaa"
-
     return (
       <input 
+      type={this.props.type}
+        class="user centerMargin bordeRedondeados"
         value={this.state.value} 
         placeholder={this.props.placeholder}
         onChange={this.onChange}
         onBlur={this.onBlur}
       />
+      
     );
   }
 }
