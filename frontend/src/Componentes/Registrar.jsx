@@ -15,7 +15,8 @@ class formulario extends Component {
         username: "",
         password: "",
         password2: "",
-        email: ""
+        email: "",
+        dni:""
       }
   }
 
@@ -34,21 +35,21 @@ class formulario extends Component {
   getemail = (v) => {
     this.setState({email: v})
   }
+  getdni = (v) => {
+    this.setState({dni: v})
+  }
 
   render() {    
     return (
         <div class="divredondo centerMargin sombra bordeRedondeados">  
+            <TextBox type="text" placeholder="Dni" img="user" name="credentials.user" get={this.getdni} /> 
             <TextBox type="email" placeholder="Email" img="user" name="credentials.user" get={this.getemail} /> 
             <TextBox type="text" placeholder="Username" img="user" name="credentials.user" get={this.getusername} />
             <TextBox type="password" placeholder="Password" img="pass" colorF="green" colorT="red" get={this.getpassword}/>        
             <TextBox type="password" placeholder="Confirm Password" img="pass" colorF="green" colorT="red" get={this.getpassword2}/>        
             
             <Submit texto="Registrarse" username={this.state.username} password={this.state.password} password2={this.state.password2} email={this.state.email}/>
-            <div class="centrado">
-                <Link url="registar" texto="REGISTRAR"/> 
-                <p> / </p>
-                <Link url="url" texto="OLVIDE MI CONTRASEÑA"/>           
-            </div>
+          
         </div>
     );
   }

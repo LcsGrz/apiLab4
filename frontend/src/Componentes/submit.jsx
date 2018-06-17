@@ -39,8 +39,11 @@ class Submit extends Component {
         }
     }
     registrar = () => {
-        const { username, password, email } = this.props
-        console.log(this.props)
+        const { username, password,password2, email } = this.props
+        if(password !== password2){
+            alert("Las contraseñas no coinciden")
+            return ;
+        }
         fetch('http://127.0.0.1:420/register', {
             method: 'POST',
             headers: {
