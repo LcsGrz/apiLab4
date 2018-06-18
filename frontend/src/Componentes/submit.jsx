@@ -5,16 +5,11 @@ import './basico.css'
 class Submit extends Component {
     submit = (e) => {
         e.preventDefault()
-        // const options = {
-        //     'Create Account': this.registrar,
-        //     'Login': this.login,
-        // }  
-        // return ((options[this.props.texto])); 
-        if(this.props.password2 ===undefined){
-            this.login();
-        }
-        else{
-            this.registrar();
+           
+        switch(this.props.texto){
+            case 'Create Account': return this.registrar();
+            case 'Login': return this.login();
+            case 'Find': return this.buscar();
         }
     }
     login = () =>{      
@@ -34,7 +29,7 @@ class Submit extends Component {
             .then((response) => {
                 response.json().then(function (data) {
                     console.log("Al token Perro: "+data.token);
-                    // this.setState({token: data.token})
+                    localStorage.setItem('token',JSON.stringify('Authorization: Bearer '+data.token));
                 });
 
             })
@@ -45,8 +40,6 @@ class Submit extends Component {
     }
     registrar = () => {
         const { username, password,password2, email ,dni } = this.props
-        
-        console.log("pase por el registrar")
         if(password !== password2){
             alert("Las contraseñas no coinciden")
             return ;
@@ -66,7 +59,6 @@ class Submit extends Component {
             })
         })
             .then((response) => {
-                console.log("pase por aqui")
                 response.json().then(function (data) {
                     console.log(data.token);
                     // this.setState({token: data.token})
@@ -78,6 +70,26 @@ class Submit extends Component {
             });
         ;
     }
+    buscar = () =>{ 
+        const { username } = this.props
+        const url = 'http://127.0.0.1:420/usuarios?q={"username":"'+username+'"}';
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            
+        })
+            .then((response) => {
+                response.json().then(function (data) {
+                    data.result.map((x)=>{
+                        console.log(x)
+                    })
+                });
+    
+            })
+        ;
+      }
     render() {
         return (
             <button type="submit" class="boton centerMargin bordeRedondeados" onClick={this.submit}>{this.props.texto}</button>
