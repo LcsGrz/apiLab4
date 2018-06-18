@@ -29,7 +29,7 @@ class Submit extends Component {
             .then((response) => {
                 response.json().then(function (data) {
                     console.log("Al token Perro: "+data.token);
-                    localStorage.setItem('token',JSON.stringify('Authorization: Bearer '+data.token));
+                    localStorage.setItem('token',JSON.stringify('Authorization: Bearer '+data.token+'}'));
                 });
 
             })
