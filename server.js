@@ -40,7 +40,7 @@ app.use("/api/", expressJwt({
 
 app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
   let collection = req.params.collection
-
+  
   if (!(req.user.rol === "admin") && roles[req.user.rol][collection] === undefined)
     throw "NoTokenNoCollection"
   else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
@@ -152,7 +152,7 @@ app.post("/api/find", (req, res, next) => {
     }
     if (result === null)
       return next("NoExistUser")
-
+      
     res.send(result)
   })
 })
