@@ -75,7 +75,7 @@ class Submit extends Component {
     }
     buscar = () =>{ 
         const { username } = this.props
-        const url = 'http://127.0.0.1:420/api/find';
+        const url = 'http://127.0.0.1:420/api/userfind';
         const tokeen = localStorage.getItem('token')
         fetch(url, {
             method: 'POST',
@@ -99,7 +99,7 @@ class Submit extends Component {
     }
     eliminar = () =>{
         const { username } = this.props
-        const url = 'http://127.0.0.1:420/api/delete';
+        const url = 'http://127.0.0.1:420/api/userdelete';
         const tokeen = localStorage.getItem('token')
         fetch(url, {
             method: 'POST',

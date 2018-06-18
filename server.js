@@ -36,15 +36,26 @@ app.use("/api/", expressJwt({
 
 app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
   let collection = req.params.collection
-  db.collection("roles").findOne({
-    "nombre": collection
-  }, (err, result) => {
-    if (!(req.user.rol === "admin") && roles[req.user.rol][collection] === undefined)
-      return next("NoTokenNoCollection")
-    else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
-      return next("UnauthorizedError")
+  if (!(req.user.rol === "admin")) {
+    db.collection("roles").findOne({
+      "nombre": req.user.rol,
+      permisos: {
+        $elemMatch: {
+          collection: collection
+        }
+      }
+    }, (err, result) => {
+      console.log(result.permisos[0]["GET"])
+      if (result === null)
+        return next("NoTokenNoCollection")
+      for (let index = 0; index < result.permisos.length; index++) {
+        if (result.permisos[index].collection === collection && !result.permisos[index][req.method])
+          return next("UnauthorizedError")
+      }
+      next()
+    })
+  } else
     next()
-  })
 })
 //--------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------USUARIOS
