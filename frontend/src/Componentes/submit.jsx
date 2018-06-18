@@ -29,7 +29,12 @@ class Submit extends Component {
             .then((response) => {
                 response.json().then(function (data) {
                     console.log("Al token Perro: "+data.token);
+<<<<<<< HEAD
                     localStorage.setItem('token',JSON.stringify('Authorization: Bearer '+data.token+'}'));
+=======
+                    // localStorage.setItem('token',JSON.stringify('Authorization: Bearer '+data.token));
+                    localStorage.setItem('token',data.token);
+>>>>>>> 5e0a460805d0b4e4edf89117302b09902cd87214
                 });
 
             })
@@ -47,7 +52,7 @@ class Submit extends Component {
         fetch('http://127.0.0.1:420/register', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json'        
             },
             body: JSON.stringify({
                 credentials: {
@@ -72,19 +77,23 @@ class Submit extends Component {
     }
     buscar = () =>{ 
         const { username } = this.props
-        const url = 'http://127.0.0.1:420/usuarios?q={"username":"'+username+'"}';
+        const url = 'http://127.0.0.1:420/api/find';
+        const tokeen = localStorage.getItem('token')
         fetch(url, {
-            method: 'GET',
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
-            }
-            
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+(tokeen)
+            },
+            body: JSON.stringify({               
+                credentials: {
+                    username}
+            })            
         })
             .then((response) => {
-                response.json().then(function (data) {
-                    data.result.map((x)=>{
-                        console.log(x)
-                    })
+                console.log(response)
+                response.json().then(function (data) {                   
+                        console.log(data)                    
                 });
     
             })
