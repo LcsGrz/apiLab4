@@ -14,7 +14,7 @@ const dbName = "noticiasDB"
 const secret = "palabrasecreta"
 let lang = "ES"
 let db = ""
-let roles
+let roles = new Array()
 let emailRegex = /^[0-9a-zA-Z]*@[0-9a-zA-Z]{3,10}\.[0-9a-zA-Z]{2,5}$/
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
@@ -23,9 +23,7 @@ MongoClient.connect(url, (err, client) => {
 
   console.log("Connected successfully to server")
   db = client.db(dbName)
-  db.collection("roles").findOne({}, (err, result) => {
-    roles = result
-  })
+  //db.collection("roles").find({}).forEach(doc => roles.push(doc))
 })
 //------------------------------------------------------------------------------------------------------------MIDDLEWARES
 app.use(cors())
@@ -45,7 +43,6 @@ app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token 
     throw "NoTokenNoCollection"
   else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
     throw "UnauthorizedError"
-
   next()
 })
 //--------------------------------------------------------------------------------------------------------
@@ -141,7 +138,7 @@ app.post("/forgot", (req, res, next) => {
   })
 })
 //--------------------------------------------------------------------------------------------Buscar usuario por email o nick
-app.post("/api/find", (req, res, next) => {
+app.post("/api/userfind", (req, res, next) => {
   if (!("credentials" in req.body))
     throw "NoCredentials"
 
@@ -157,8 +154,12 @@ app.post("/api/find", (req, res, next) => {
   })
 })
 //--------------------------------------------------------------------------------------------Eliminar usuario por email o nick
+<<<<<<< HEAD
 app.post("/api/delete", (req, res, next) => {
   
+=======
+app.post("/api/userdelete", (req, res, next) => {
+>>>>>>> 80044dfebcc4fa8596d1c55f5fa3559a0bdb7fc9
   if (!("credentials" in req.body))
     throw "NoCredentials"
    
@@ -174,7 +175,7 @@ app.post("/api/delete", (req, res, next) => {
   })
 })
 //--------------------------------------------------------------------------------------------Cambiar contraseña
-app.post("/api/changepass", (req, res, next) => {
+app.post("/api/userchangepass", (req, res, next) => {
   if (!("credentials" in req.body))
     throw "NoCredentials"
 
@@ -187,7 +188,7 @@ app.post("/api/changepass", (req, res, next) => {
   }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Cambiar rol
-app.post("/api/changerol", (req, res, next) => {
+app.post("/api/userchangerol", (req, res, next) => {
   db.collection("usuarios").update({
     _id: new mongodb.ObjectID(req.user._id)
   }, {
@@ -207,17 +208,52 @@ function Usuario(user) {
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------ROLES
 //--------------------------------------------------------------------------------------------Insertar
-app.put("/roles", (req, res) => {
-
-//roles.push(req.body)
-  console.log(req.body) /*
-  
-  db.collection("roles").update({_id: new mongodb.ObjectID("5b26ee7c1ef7a93b605d32ac")}, {
-      $addToSet: {
-        req.body
-      }
-    }, (err, result) => funkInter(res, err, result))*/
+app.put("/newrol", (req, res) => db.collection("roles").insert({
+  nombre: req.body.nombre,
+  permisos: []
+}, (err, result) => funkInter(res, err, result)))
+//--------------------------------------------------------------------------------------------Añadir permisos
+app.put("/addperm", (req, res) => {
+  console.log(req.body.permisos[0].collection)
+  db.collection("roles").update({
+  "nombre": req.body.nombre},{
+  $addToSet: {"permisos":{
+      "collection": req.body.permisos[0].collection,
+      "GET": req.body.permisos[0].GET,
+      "POST": req.body.permisos[0].POST,
+      "PUT": req.body.permisos[0].PUT,
+      "DELETE": req.body.permisos[0].DELETE,
+      "PATCH": req.body.permisos[0].PATCH
+  }
+  }
+}, (err, result) => funkInter(res, err, result))
 })
+//--------------------------------------------------------------------------------------------Modificar permisos
+app.put("/modperm", (req, res) => {
+  console.log(req.body.permisos[0].collection)
+  db.collection("roles").update({
+    nombre: req.body.nombre,
+    permisos: {
+      $elemMatch: {
+        collection: req.body.permisos[0].collection
+      }
+    }
+  }, {
+    $set: {
+        "permisos.$.collection": req.body.permisos[0].collection,
+        "permisos.$.GET": req.body.permisos[0].GET,
+        "permisos.$.POST": req.body.permisos[0].POST,
+        "permisos.$.PUT": req.body.permisos[0].PUT,
+        "permisos.$.DELETE": req.body.permisos[0].DELETE,
+        "permisos.$.PATCH": req.body.permisos[0].PATCH
+      
+    }
+  }, (err, result) => funkInter(res, err, result))
+})
+//--------------------------------------------------------------------------------------------Eliminar rol
+app.put("/delrol", (req, res) => db.collection("roles").deleteOne({
+  nombre: req.body.nombre
+}, (err, result) => funkInter(res, err, result)))
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------COLLECIONES
 //--------------------------------------------------------------------------------------------Ver
@@ -235,8 +271,8 @@ app.get("/api/:collection", (req, res, next) => {
   db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(l).toArray((err, result) => {
     if (err)
       return next("ErrorCliente")
-    
-    result.map(x=>console.log(x))
+
+    result.map(x => console.log(x))
     res.send({
       result,
       next: "/" + req.params.collection + "?" + ((Comprobacion(q)) ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l

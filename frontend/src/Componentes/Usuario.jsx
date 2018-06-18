@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-
+import Page from './Page';
 const sideBarStyle={
     width: '25%',
     float: 'left',
@@ -21,7 +21,7 @@ class Usuario extends Component {
             <div>
                 <NavBar/>
                 <div style={contentStyle}>
-                    <Route path={'/:topicId'} component={Topic} />
+                    <Route path={'/api/:collection'} component={Sector} />
                 </div>
             </div>            
             </Router>
@@ -46,9 +46,10 @@ const NavBar = () => (
     </div>
   );
 
-  const Topic = ({ match }) => (
+  const Sector = ({ match }) => (
     <div>
-        <h1>{match.params.topicId}</h1>
+        <h1>{match.params.collection}</h1>
+        <Page coleccion={match.params.collection}/>
     </div>
   );
 
