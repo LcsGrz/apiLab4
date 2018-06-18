@@ -10,6 +10,8 @@ class Submit extends Component {
             case 'Create Account': return this.registrar();
             case 'Login': return this.login();
             case 'Find': return this.buscar();
+            case 'Delete': return this.eliminar();
+            case 'Update': return this.eliminar();
         }
     }
     login = () =>{      
@@ -94,7 +96,35 @@ class Submit extends Component {
     
             })
         ;
-      }
+    }
+    eliminar = () =>{
+        const { username } = this.props
+        const url = 'http://127.0.0.1:420/api/delete';
+        const tokeen = localStorage.getItem('token')
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+(tokeen)
+            },
+            body: JSON.stringify({               
+                credentials: {
+                    username
+                }
+            })            
+        })
+            .then((response) => {
+                console.log(response)
+                response.json().then(function (data) {                   
+                        console.log(data.ok)  
+                        if(data.ok>0){
+                            alert("El usuario "+username+" ah sido eliminado")
+                        }                  
+                });
+    
+            })
+        ;
+    }
     render() {
         return (
             <button type="submit" class="boton centerMargin bordeRedondeados" onClick={this.submit}>{this.props.texto}</button>

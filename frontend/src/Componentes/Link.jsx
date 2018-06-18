@@ -15,9 +15,10 @@ class Link extends Component {
     }
     forgot=() =>{
       //Aca va lo de la ruta (?)
+      fetch('http://127.0.0.1:420/forgot')
     }
     registrar=() =>{
-      //Aca tambien (?)
+      fetch('http://127.0.0.1:420/registrar')
     }
     render() {
         return (

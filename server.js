@@ -158,9 +158,10 @@ app.post("/api/find", (req, res, next) => {
 })
 //--------------------------------------------------------------------------------------------Eliminar usuario por email o nick
 app.post("/api/delete", (req, res, next) => {
+  
   if (!("credentials" in req.body))
     throw "NoCredentials"
-
+   
   db.collection("usuarios").deleteOne(Usuario(req.body.credentials.username), (err, result) => {
     if (err) {
       console.log(err)
@@ -168,7 +169,7 @@ app.post("/api/delete", (req, res, next) => {
     }
     if (result === null)
       return next("NoExistUser")
-
+    console.log(result)
     res.send(result)
   })
 })

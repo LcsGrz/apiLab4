@@ -9,10 +9,10 @@ class App extends Component {
     return (
       <Router>
         <div>
-          <Route exact path="/" component={Home} />
-          <Route path="/login" component={Login} />
+          
+          <Route exact path="/login" component={Login} />
           <Route path="/register" component={Registrar} />
-          <Route path="/api" component={Usuario} />
+          <Route path="/Home" component={Usuario} />
           <Route path="/admin" component={Abm} />
         </div>
       </Router>
