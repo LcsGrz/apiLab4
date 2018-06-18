@@ -173,7 +173,7 @@ app.get("/:collection", (req, res, next) => {
     throw "BadJSON"
   }
   Transformador(q)
-  db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(1).toArray((err, result) => {
+  db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(l).toArray((err, result) => {
     if (err)
       return next("ErrorCliente")
     
