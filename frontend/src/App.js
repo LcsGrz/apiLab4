@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Usuario from './Componentes/Usuario';
 import Registrar from './Componentes/Registrar';
 import Login from './Componentes/Login';
-
+import Abm from './Componentes/ABMadmin';
 class App extends Component {
   render() {
     return (
@@ -13,6 +13,7 @@ class App extends Component {
           <Route path="/login" component={Login} />
           <Route path="/register" component={Registrar} />
           <Route path="/api" component={Usuario} />
+          <Route path="/admin" component={Abm} />
         </div>
       </Router>
     );

@@ -75,11 +75,11 @@ app.post("/register", (req, res, next) => { //Verifica que no exista el usuario 
 
   db.collection("usuarios").findOne({
     $or: [{
-      "email": req.body.credentials.email
-    },
-    {
-      "username": req.body.credentials.username
-    }
+        "email": req.body.credentials.email
+      },
+      {
+        "username": req.body.credentials.username
+      }
     ]
   }, (err, result) => { //Verifica que no exista el email
     if (result !== null) {
@@ -136,7 +136,8 @@ app.post("/forgot", (req, res, next) => {
     }, {
       $set: {
         password: bcrypt.hashSync(result.dni, 8)
-      }} , (err, result) => funkInter(res, err, result))
+      }
+    }, (err, result) => funkInter(res, err, result))
   })
 })
 //--------------------------------------------------------------------------------------------Buscar usuario por email o nick
@@ -171,7 +172,7 @@ app.post("/api/delete", (req, res, next) => {
     res.send(result)
   })
 })
-//--------------------------------------------------------------------------------------------Cmabiar contraseña
+//--------------------------------------------------------------------------------------------Cambiar contraseña
 app.post("/api/changepass", (req, res, next) => {
   if (!("credentials" in req.body))
     throw "NoCredentials"
@@ -182,7 +183,17 @@ app.post("/api/changepass", (req, res, next) => {
     $set: {
       password: bcrypt.hashSync(req.body.credentials.password, 8)
     }
-  }, (err, result) => funkInter(res,err,result))
+  }, (err, result) => funkInter(res, err, result))
+})
+//--------------------------------------------------------------------------------------------Cambiar rol
+app.post("/api/changerol", (req, res, next) => {
+  db.collection("usuarios").update({
+    _id: new mongodb.ObjectID(req.user._id)
+  }, {
+    $set: {
+      rol: req.body.rol
+    }
+  }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------Funcion usuario -> nick/email
@@ -193,29 +204,38 @@ function Usuario(user) {
     return JSON.parse("{\"username\":\"" + user + "\"}")
 }
 //------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------ROLES
+//--------------------------------------------------------------------------------------------Insertar
+app.put("/roles", (req, res) => {
+
+//roles.push(req.body)
+  console.log(req.body) /*
+  
+  db.collection("roles").update({_id: new mongodb.ObjectID("5b26ee7c1ef7a93b605d32ac")}, {
+      $addToSet: {
+        req.body
+      }
+    }, (err, result) => funkInter(res, err, result))*/
+})
+//------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------COLLECIONES
 //--------------------------------------------------------------------------------------------Ver
 app.get("/api/:collection", (req, res, next) => {
-  let {
-    q,
-    p,
-    l
-  } = req.query
-
-  l = (Comprobacion(l) && !isNaN(parseInt(l))) ? parseInt(l) : 10
-  p = (Comprobacion(p) && !isNaN(parseInt(p))) ? parseInt(p) : 0
+  let q = req.query.q
+  let l = (Comprobacion(req.query.l) && !isNaN(parseInt(l))) ? parseInt(l) : 10
+  let p = (Comprobacion(req.query.p) && !isNaN(parseInt(p))) ? parseInt(p) : 0
 
   try {
     q = (q === undefined) ? {} : JSON.parse(q)
   } catch (Exception) {
     throw "BadJSON"
   }
-
   Transformador(q)
   db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(l).toArray((err, result) => {
     if (err)
       return next("ErrorCliente")
-
+    
+    result.map(x=>console.log(x))
     res.send({
       result,
       next: "/" + req.params.collection + "?" + ((Comprobacion(q)) ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l
@@ -300,8 +320,8 @@ app.patch("/api/:collection/:id", (req, res) => {
   db.collection(collection).update({
     _id: new mongodb.ObjectID(id)
   }, {
-      $set: req.body
-    }, (err, result) => funkInter(res, err, result))
+    $set: req.body
+  }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------Funcion que mas se repite
 const funkInter = (res, err, result) => {
@@ -313,7 +333,7 @@ const funkInter = (res, err, result) => {
 //--------------------------------------------------------------------------------------------
 const Comprobacion = valor => valor && valor !== null && valor !== undefined //Comprueba si el valor existe
 
-app.listen(4200, "0.0.0.0", () => console.log("listo en 420...")) //Inicia el servidor
+app.listen(420, "0.0.0.0", () => console.log("listo en 420...")) //Inicia el servidor
 
 app.use((err, req, res, next) => { //Middleware que captura todas las excepciones
   if (err)

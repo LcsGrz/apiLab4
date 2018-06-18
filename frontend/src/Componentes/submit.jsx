@@ -5,16 +5,15 @@ import './basico.css'
 class Submit extends Component {
     submit = (e) => {
         e.preventDefault()
-        const options = {
-            'Create Account': this.registrar(),
-            'Login': this.login(),
-        }  
-        return (options[this.props.texto]); 
+           
+        switch(this.props.texto){
+            case 'Create Account': return this.registrar();
+            case 'Login': return this.login();
+            case 'Find': return this.buscar();
+        }
     }
-
-    login = () =>{
+    login = () =>{      
         const { username, password } = this.props
-
         fetch('http://127.0.0.1:420/login', {
             method: 'POST',
             headers: {
@@ -39,10 +38,8 @@ class Submit extends Component {
             });
         ;
     }
-    
     registrar = () => {
         const { username, password,password2, email ,dni } = this.props
-        
         if(password !== password2){
             alert("Las contraseñas no coinciden")
             return ;
@@ -73,6 +70,26 @@ class Submit extends Component {
             });
         ;
     }
+    buscar = () =>{ 
+        const { username } = this.props
+        const url = 'http://127.0.0.1:420/usuarios?q={"username":"'+username+'"}';
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            
+        })
+            .then((response) => {
+                response.json().then(function (data) {
+                    data.result.map((x)=>{
+                        console.log(x)
+                    })
+                });
+    
+            })
+        ;
+      }
     render() {
         return (
             <button type="submit" class="boton centerMargin bordeRedondeados" onClick={this.submit}>{this.props.texto}</button>

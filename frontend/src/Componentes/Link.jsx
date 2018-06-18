@@ -4,13 +4,24 @@ class Link extends Component {
 
     constructor(props) {
       super(props)
-      this.state = {
-        value: ""
-      }
+    }
+    onClick = (e) =>{
+      e.preventDefault();
+      const options = {
+        'Create Account': this.registrar(),
+        'Forgot?': this.forgot(),
+      }  
+      return (options[this.props.url]); 
+    }
+    forgot=() =>{
+      //Aca va lo de la ruta (?)
+    }
+    registrar=() =>{
+      //Aca tambien (?)
     }
     render() {
         return (
-          <a href={this.props.url} class="links">{this.props.texto}</a>
+          <a onClick={this.onClick} class="links">{this.props.texto}</a>
         );
       }
 }

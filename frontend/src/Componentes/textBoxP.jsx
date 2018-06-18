@@ -35,6 +35,7 @@ class textBoxP extends Component {
         placeholder={this.props.placeholder}
         onChange={this.onChange}
         onBlur={this.onBlur}
+        required
       />
       
     );
