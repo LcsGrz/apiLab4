@@ -171,7 +171,7 @@ app.post("/api/delete", (req, res, next) => {
     res.send(result)
   })
 })
-//--------------------------------------------------------------------------------------------Cmabiar contraseña
+//--------------------------------------------------------------------------------------------Cambiar contraseña
 app.post("/api/changepass", (req, res, next) => {
   if (!("credentials" in req.body))
     throw "NoCredentials"
@@ -183,6 +183,16 @@ app.post("/api/changepass", (req, res, next) => {
       password: bcrypt.hashSync(req.body.credentials.password, 8)
     }
   }, (err, result) => funkInter(res,err,result))
+})
+//--------------------------------------------------------------------------------------------Cambiar rol
+app.post("/api/changerol", (req, res, next) => {
+  db.collection("usuarios").update({
+    _id: new mongodb.ObjectID(req.user._id)
+  }, {
+    $set: {
+      rol: req.body.rol
+    }
+  }, (err, result) => funkInter(res, err, result))
 })
 //--------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------Funcion usuario -> nick/email
