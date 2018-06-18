@@ -5,7 +5,7 @@ import Abm from './Componentes/ABMadmin';
 class App extends Component {
   render() {
     return (
-      <Abm /> 
+      <Login /> 
       // cambiar entre login y registrar para ir probando
     );
   }

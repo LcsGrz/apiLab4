@@ -5,15 +5,20 @@ import './basico.css'
 class Submit extends Component {
     submit = (e) => {
         e.preventDefault()
-        const options = {
-            'Create Account': this.registrar(),
-            'Login': this.login(),
-        }  
-        return (options[this.props.texto]); 
+        // const options = {
+        //     'Create Account': this.registrar,
+        //     'Login': this.login,
+        // }  
+        // return ((options[this.props.texto])); 
+        if(this.props.password2 ===undefined){
+            this.login();
+        }
+        else{
+            this.registrar();
+        }
     }
-    login = () =>{
+    login = () =>{      
         const { username, password } = this.props
-
         fetch('http://127.0.0.1:420/login', {
             method: 'POST',
             headers: {
@@ -41,6 +46,7 @@ class Submit extends Component {
     registrar = () => {
         const { username, password,password2, email ,dni } = this.props
         
+        console.log("pase por el registrar")
         if(password !== password2){
             alert("Las contraseñas no coinciden")
             return ;

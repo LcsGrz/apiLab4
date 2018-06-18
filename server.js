@@ -15,7 +15,7 @@ const secret = "palabrasecreta"
 let lang = "ES"
 let db = ""
 let roles
-let collection
+let emailRegex = /^[0-9a-zA-Z]*@[0-9a-zA-Z]{3,10}\.[0-9a-zA-Z]{2,5}$/
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
   if (err)
@@ -37,48 +37,40 @@ app.use(bodyParser.json())
 app.use("/api/", expressJwt({
   secret: secret
 }))
-app.use("/:collection", (req, res, next) => {
-  collection = req.params.collection
-  next()
-})
-app.use("/api/:collection/:id", (req, res, next) => {
-  collection = req.params.collection
-  next()
-})
-app.use("/api/:collection", (req, res, next) => {
-  collection = req.params.collection
-  next()
-})
 
-app.use((req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
-  next()
-  if (collection !== "register" && collection !== "login") {
-    if (req.user === undefined || roles[req.user.rol][collection] === undefined)
+app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
+  let collection = req.params.collection
+
+  if (!(req.user.rol === "admin")) {
+    if ((req.user === undefined) || roles[req.user.rol][collection] === undefined)
       throw "NoTokenNoCollection"
-    else if (!roles[req.user.rol][collection][req.method])
+    else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
       throw "UnauthorizedError"
   }
+
   next()
 })
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------USUARIOS
 //------------------------------------------------------------------------------------------------------------Propios
 //--------------------------------------------------------------------------------------------Login
 app.post("/login", (req, res, next) => {
   if (!("credentials" in req.body))
-    throw "ErrorCliente"
+    throw "NoCredentials"
 
   let dato = ""
-  if (Comprobacion(req.body.credentials.username))
-    dato = JSON.parse("{\"username\":\"" + req.body.credentials.username + "\"}")
+  if (emailRegex.test(req.body.credentials.username))
+    dato = JSON.parse("{\"email\":\"" + req.body.credentials.username + "\"}")
   else
-    dato = JSON.parse("{\"email\":\"" + req.body.credentials.email + "\"}")
+    dato = JSON.parse("{\"username\":\"" + req.body.credentials.username + "\"}")
+
   db.collection("usuarios").findOne(dato, (err, result) => {
     if (err) {
       return next("ErrorCliente")
     }
-    console.log(result  )
-    if (result === null) {
+    if (result === null)
       return next("NoExistUser")
-    }
+
     if (!bcrypt.compareSync(req.body.credentials.password, result.password))
       return next("!EqualPass")
     CrearToken(result, 3600, res)
@@ -88,7 +80,7 @@ app.post("/login", (req, res, next) => {
 app.post("/register", (req, res, next) => { //Verifica que no exista el usuario o el email
   console.log(req.body)
   if (!("credentials" in req.body))
-    throw "ErrorCliente"
+    throw "NoCredentials"
 
   db.collection("usuarios").findOne({
     $or: [{
@@ -110,6 +102,7 @@ app.post("/register", (req, res, next) => { //Verifica que no exista el usuario 
       email: req.body.credentials.email,
       username: req.body.credentials.username,
       password: bcrypt.hashSync(req.body.credentials.password, 8),
+      dni: req.body.credentials.dni,
       rol: "usuario"
     }, res, next)
   })
@@ -132,6 +125,37 @@ const CrearToken = (result, tiempo, res) => {
     token
   })
 }
+//--------------------------------------------------------------------------------------------Cambiar contraseña
+app.post("/forgot", (req, res, next) => {
+  console.log(req.body)
+  if (!("credentials" in req.body))
+    throw "NoCredentials"
+
+  let dato = ""
+  if (emailRegex.test(req.body.credentials.username))
+    dato = JSON.parse("{\"email\":\"" + req.body.credentials.username + "\"}")
+  else
+    dato = JSON.parse("{\"username\":\"" + req.body.credentials.username + "\"}")
+
+  db.collection("usuarios").findOne(dato, (err, result) => {
+    if (err) {
+      console.log(err)
+      return next("ErrorCliente")
+    }
+    if (result === null)
+      return next("NoExistUser")
+
+    result.password = bcrypt.hashSync(result.dni, 8)
+
+    db.collection("usuarios").update({
+      _id: new mongodb.ObjectID(result._id)
+    }, {
+      $set: result
+    }, (err, result) => funkInter(res, err, result))
+  })
+})
+//------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------COLLECIONES
 //--------------------------------------------------------------------------------------------Ver
 app.get("/:collection", (req, res, next) => {
   let {
@@ -160,6 +184,7 @@ app.get("/:collection", (req, res, next) => {
     })
   })
 })
+
 function Transformador(o) {
   /* Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
                                   eso es por que todas las claves especiales de mongo van unicas y empiezan con $
@@ -175,6 +200,7 @@ function Transformador(o) {
     })
   }
 }
+
 function transToken(s) {
   if (/^\/.*\/$/.test(s))
     return new RegExp(s.substring(1, s.length - 1))
@@ -185,6 +211,7 @@ function transToken(s) {
 }
 //const toExp = (clave) => /^\/.*\/$/.test(clave) ? new RegExp(clave.substring(1, clave.length - 1)) : clave
 //const toExpFecha = (fecha) => /^@.*@$/.test(fecha) ? new Date(fecha.substring(1, clave.length - 1)) : fecha
+
 //------------------------------------------------------------------------------------------------------------Profe
 //--------------------------------------------------------------------------------------------Ver por ID
 app.get("/api/:collection/:id", (req, res) => {
@@ -247,7 +274,7 @@ const funkInter = (res, err, result) => {
 }
 //--------------------------------------------------------------------------------------------
 const Comprobacion = valor => valor && valor !== null && valor !== undefined //Comprueba si el valor existe
- 
+
 app.listen(420, "0.0.0.0", () => console.log("listo en 420...")) //Inicia el servidor
 
 app.use((err, req, res, next) => { //Middleware que captura todas las excepciones
