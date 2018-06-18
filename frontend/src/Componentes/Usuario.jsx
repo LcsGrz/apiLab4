@@ -21,9 +21,7 @@ class Usuario extends Component {
             <div>
                 <NavBar/>
                 <div style={contentStyle}>
-                    <h3>E</h3>
-                    {'${match.url}'}
-                    <Route path={'${match.url}/:topicId'} component={Topic} />
+                    <Route path={'/api/:topicId'} component={Topic} />
                 </div>
             </div>            
             </Router>
@@ -50,8 +48,7 @@ const NavBar = () => (
 
   const Topic = ({ match }) => (
     <div>
-        <h1>UNO</h1>
-        <h3>{match.params.topicId}</h3>
+        <h1>{match.params.topicId}</h1>
     </div>
   );
 
