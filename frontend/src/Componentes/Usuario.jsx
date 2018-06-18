@@ -34,13 +34,13 @@ const NavBar = () => (
         <h2>Opciones</h2>
         <ul>
             <li>
-                <Link to={ '/api/usuarios' }>Usuarios</Link>
+                <Link to={ '/login' }>Login</Link>
             </li>
             <li>
-                <Link to={ '/api/roles' }>Roles</Link>
+                <Link to={ '/register' }>Registrar</Link>
             </li>
             <li>
-                <Link to={ '/api/noticias' }>Noticias</Link>
+                <Link to={ '/admin' }>Admin</Link>
             </li>
         </ul>
     </div>

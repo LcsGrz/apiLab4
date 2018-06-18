@@ -14,7 +14,6 @@ const dbName = "noticiasDB"
 const secret = "palabrasecreta"
 let lang = "ES"
 let db = ""
-let roles = new Array()
 let emailRegex = /^[0-9a-zA-Z]*@[0-9a-zA-Z]{3,10}\.[0-9a-zA-Z]{2,5}$/
 //------------------------------------------------------------------------------------------------------------CONEXION A MONGO
 MongoClient.connect(url, (err, client) => {
@@ -23,7 +22,6 @@ MongoClient.connect(url, (err, client) => {
 
   console.log("Connected successfully to server")
   db = client.db(dbName)
-  //db.collection("roles").find({}).forEach(doc => roles.push(doc))
 })
 //------------------------------------------------------------------------------------------------------------MIDDLEWARES
 app.use(cors())
@@ -38,12 +36,15 @@ app.use("/api/", expressJwt({
 
 app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
   let collection = req.params.collection
-  console.log(roles[0])
-  if (!(req.user.rol === "admin") && roles[req.user.rol][collection] === undefined)
-    throw "NoTokenNoCollection"
-  else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
-    throw "UnauthorizedError"
-  next()
+  db.collection("roles").findOne({
+    "nombre": collection
+  }, (err, result) => {
+    if (!(req.user.rol === "admin") && roles[req.user.rol][collection] === undefined)
+       return next("NoTokenNoCollection")
+    else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
+       return next("UnauthorizedError")
+    next()
+  })
 })
 //--------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------USUARIOS

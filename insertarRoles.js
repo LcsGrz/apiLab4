@@ -12,8 +12,7 @@ MongoClient.connect(url, (err, client) => {
   let db = client.db(dbName)
 
   db.collection("roles").insert({
-    "admin": {},
-    "usuario": {
+    "usuario": [{
       "pullers": {
         "GET": true,
         "POST": true,
@@ -21,7 +20,10 @@ MongoClient.connect(url, (err, client) => {
         "DELETE": false,
         "PATCH": false
       }
-    }
+    }]
+  })
+  db.collection("roles").insert({
+    "admin": []
   })
 
   db.collection("usuarios").insert({

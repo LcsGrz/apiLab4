@@ -29,7 +29,7 @@ class textBoxP extends Component {
   render() {
     return (
       <input 
-      type={this.props.type}
+        type={this.props.type}
         class="user centerMargin bordeRedondeados"
         value={this.state.value} 
         placeholder={this.props.placeholder}

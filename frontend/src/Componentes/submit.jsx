@@ -10,6 +10,8 @@ class Submit extends Component {
             case 'Create Account': return this.registrar();
             case 'Login': return this.login();
             case 'Find': return this.buscar();
+            case 'Delete': return this.eliminar();
+            case 'Update': return this.eliminar();
         }
     }
     login = () =>{      
@@ -29,7 +31,8 @@ class Submit extends Component {
             .then((response) => {
                 response.json().then(function (data) {
                     console.log("Al token Perro: "+data.token);
-                    localStorage.setItem('token',JSON.stringify('Authorization: Bearer '+data.token+'}'));
+                    // localStorage.setItem('token',JSON.stringify('Authorization: Bearer '+data.token));
+                    localStorage.setItem('token',data.token);
                 });
 
             })
@@ -47,7 +50,7 @@ class Submit extends Component {
         fetch('http://127.0.0.1:420/register', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json'        
             },
             body: JSON.stringify({
                 credentials: {
@@ -72,24 +75,56 @@ class Submit extends Component {
     }
     buscar = () =>{ 
         const { username } = this.props
-        const url = 'http://127.0.0.1:420/usuarios?q={"username":"'+username+'"}';
+        const url = 'http://127.0.0.1:420/api/find';
+        const tokeen = localStorage.getItem('token')
         fetch(url, {
-            method: 'GET',
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
-            }
-            
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+(tokeen)
+            },
+            body: JSON.stringify({               
+                credentials: {
+                    username}
+            })            
         })
             .then((response) => {
-                response.json().then(function (data) {
-                    data.result.map((x)=>{
-                        console.log(x)
-                    })
+                console.log(response)
+                response.json().then(function (data) {                   
+                        console.log(data)                    
                 });
     
             })
         ;
-      }
+    }
+    eliminar = () =>{
+        const { username } = this.props
+        const url = 'http://127.0.0.1:420/api/delete';
+        const tokeen = localStorage.getItem('token')
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+(tokeen)
+            },
+            body: JSON.stringify({               
+                credentials: {
+                    username
+                }
+            })            
+        })
+            .then((response) => {
+                console.log(response)
+                response.json().then(function (data) {                   
+                        console.log(data.ok)  
+                        if(data.ok>0){
+                            alert("El usuario "+username+" ah sido eliminado")
+                        }                  
+                });
+    
+            })
+        ;
+    }
     render() {
         return (
             <button type="submit" class="boton centerMargin bordeRedondeados" onClick={this.submit}>{this.props.texto}</button>
