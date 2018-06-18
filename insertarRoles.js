@@ -1,10 +1,5 @@
-  
-
-const express = require("express")
-const bodyParser = require("body-parser")
 const mongodb = require("mongodb")
 const MongoClient = mongodb.MongoClient
-const app = express()
 const url = "mongodb://localhost:27017"
 const dbName = "noticiasDB"
 
@@ -13,9 +8,35 @@ MongoClient.connect(url, (err, client) => {
     console.log(err)
     return err
   }
-  console.log("Connected successfully to server")
-  db = client.db(dbName)
-  db.insert({"admin": { "pullers": {"GET": true,"POST": true,"PUT": true,"DELETE": true,"PATCH": true},"usuarios": {"GET": true,"POST": true,"PUT": true,"DELETE": true,"PATCH": true}},"usuario": { "pullers": {"GET": true,"POST": true,"PUT": true,"DELETE": true,"PATCH": true}}},() => {
-    console.log("Insertado!")
+
+  let db = client.db(dbName)
+
+  db.collection("roles").insert({
+    "admin": {},
+    "usuario": {
+      "pullers": {
+        "GET": true,
+        "POST": true,
+        "PUT": true,
+        "DELETE": false,
+        "PATCH": false
+      }
+    }
+  })
+
+  db.collection("usuarios").insert({
+    "email": "admin@gmail.com",
+    "username": "admin",
+    "password": "$2a$08$T.HdQsOI6F4m6gHsIoUA0..AibEatHZcSz0ckn3rSqkxXiSE/VIlW", //admin
+    "dni": "12345678",
+    "rol": "admin"
+  })
+
+  db.collection("usuarios").insert({
+    "email": "user@gmail.com",
+    "username": "user",
+    "password": "$2a$08$zeCUPfRxywcDKSIvJcU.f.y8/zEajUT0F9WsKYPqWTQtrxkYRMB76", //user
+    "dni": "87654321",
+    "rol": "usuario"
   })
 })
