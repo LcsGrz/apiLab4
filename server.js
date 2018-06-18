@@ -209,21 +209,24 @@ app.put("/newrol", (req, res) => db.collection("roles").insert({
 }, (err, result) => funkInter(res, err, result)))
 //--------------------------------------------------------------------------------------------Añadir permisos
 app.put("/addperm", (req, res) => {
-  console.log(req.body.permisos[0].collection)
-  db.collection("roles").update({
-    "nombre": req.body.nombre
-  }, {
-    $addToSet: {
-      "permisos": {
-        "collection": req.body.permisos[0].collection,
-        "GET": req.body.permisos[0].GET,
-        "POST": req.body.permisos[0].POST,
-        "PUT": req.body.permisos[0].PUT,
-        "DELETE": req.body.permisos[0].DELETE,
-        "PATCH": req.body.permisos[0].PATCH
-      }
+  db.collection("roles").find({}, (err, result) => {
+    if (Comprobacion(result)) {
+      db.collection("roles").update({
+        "nombre": req.body.nombre
+      }, {
+        $addToSet: {
+          "permisos": {
+            "collection": req.body.permisos[0].collection,
+            "GET": req.body.permisos[0].GET,
+            "POST": req.body.permisos[0].POST,
+            "PUT": req.body.permisos[0].PUT,
+            "DELETE": req.body.permisos[0].DELETE,
+            "PATCH": req.body.permisos[0].PATCH
+          }
+        }
+      }, (err, result) => funkInter(res, err, result))
     }
-  }, (err, result) => funkInter(res, err, result))
+  })
 })
 //--------------------------------------------------------------------------------------------Modificar permisos
 app.put("/modperm", (req, res) => {
