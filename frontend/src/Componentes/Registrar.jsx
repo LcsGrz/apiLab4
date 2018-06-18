@@ -1,9 +1,7 @@
 // Registrar
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import TextBox from './textBoxP';
 import Submit from './submit';
-import Link from './Link';
 import './basico.css'
 
 
@@ -42,7 +40,7 @@ class formulario extends Component {
   render() {    
     return (
         <div class="divredondo centerMargin sombra bordeRedondeados">  
-            <TextBox type="text" placeholder="Dni" img="user" name="credentials.user" get={this.getdni} /> 
+          
             <TextBox type="email" placeholder="Email" img="user" name="credentials.user" get={this.getemail} /> 
             <TextBox type="text" placeholder="Username" img="user" name="credentials.user" get={this.getusername} />
             <TextBox type="password" placeholder="Password" img="pass" colorF="green" colorT="red" get={this.getpassword}/>        

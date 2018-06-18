@@ -230,12 +230,12 @@ app.get("/api/:collection", (req, res, next) => {
   } catch (Exception) {
     throw "BadJSON"
   }
-
   Transformador(q)
   db.collection(req.params.collection).find(q).skip((p > 0) ? (--p * l) : 0).limit(l).toArray((err, result) => {
     if (err)
       return next("ErrorCliente")
-
+    
+    result.map(x=>console.log(x))
     res.send({
       result,
       next: "/" + req.params.collection + "?" + ((Comprobacion(q)) ? "q=" + JSON.stringify(q) + "&" : "") + "p=" + ++p + "&l=" + l
