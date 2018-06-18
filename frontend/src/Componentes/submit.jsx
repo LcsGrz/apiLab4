@@ -7,10 +7,11 @@ class Submit extends Component {
         e.preventDefault()
         const options = {
             'Create Account': this.registrar(),
-            'Login': this.registrar(),
+            'Login': this.login(),
         }  
         return (options[this.props.texto]); 
     }
+
     login = () =>{
         const { username, password } = this.props
 
@@ -29,7 +30,7 @@ class Submit extends Component {
             .then((response) => {
                 response.json().then(function (data) {
                     console.log("Al token Perro: "+data.token);
-                    // this.setState({token: data.token})
+                    localStorage.setItem('token',JSON.stringify('Authorization: Bearer '+data.token));
                 });
 
             })
@@ -38,6 +39,7 @@ class Submit extends Component {
             });
         ;
     }
+    
     registrar = () => {
         const { username, password,password2, email ,dni } = this.props
         
@@ -60,7 +62,6 @@ class Submit extends Component {
             })
         })
             .then((response) => {
-                console.log("pase por aqui")
                 response.json().then(function (data) {
                     console.log(data.token);
                     // this.setState({token: data.token})
