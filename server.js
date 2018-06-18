@@ -40,9 +40,9 @@ app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token 
     "nombre": collection
   }, (err, result) => {
     if (!(req.user.rol === "admin") && roles[req.user.rol][collection] === undefined)
-       return next("NoTokenNoCollection")
+      return next("NoTokenNoCollection")
     else if (!(req.user.rol === "admin") && !roles[req.user.rol][collection][req.method])
-       return next("UnauthorizedError")
+      return next("UnauthorizedError")
     next()
   })
 })
