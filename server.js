@@ -45,7 +45,6 @@ app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token 
         }
       }
     }, (err, result) => {
-      console.log(result.permisos[0]["GET"])
       if (result === null)
         return next("NoTokenNoCollection")
       for (let index = 0; index < result.permisos.length; index++) {
