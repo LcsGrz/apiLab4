@@ -28,9 +28,7 @@ class textBoxP extends Component {
 
   render() {
     
-    const estilo = {
-            
-          
+    const estilo = {       
     };
     
     return (

@@ -95,6 +95,7 @@ input:focus {
     width: 29%;
     height: 40px;
     margin-top: 10px;
+    margin-bottom: 10px;
 }
 .botonNormal {
     font-size: 30px;

@@ -5,21 +5,21 @@ import './basico.css'
 class Submit extends Component {
     submit = (e) => {
         e.preventDefault()
-           
-        switch(this.props.texto){
+
+        switch (this.props.texto) {
             case 'Create Account': return this.registrar();
             case 'Login': return this.login();
             case 'Find': return this.buscar();
             case 'Delete': return this.eliminar();
             case 'Update': return this.eliminar();
-            case 'Accept': return this.forgot();  
+            case 'Accept': return this.forgot();
             case 'Back': return this.back();
         }
     }
-    back = ()=> {
-        document.location.href= 'http://localhost:3000/login'; 
+    back = () => {
+        document.location.href = 'http://localhost:3000/login';
     }
-    login = () =>{      
+    login = () => {
         const { username, password } = this.props
         fetch('http://127.0.0.1:420/login', {
             method: 'POST',
@@ -34,10 +34,16 @@ class Submit extends Component {
             })
         })
             .then((response) => {
-                response.json().then(function (data) {
-                    console.log("Al token Perro: "+data.token);
+                response.json().then(function (data) {                    
                     // localStorage.setItem('token',JSON.stringify('Authorization: Bearer '+data.token));
-                    localStorage.setItem('token',data.token);
+                    if (data.token !== null) {                        
+                        document.location.href= 'http://localhost:3000/admin'; 
+                        console.log("Al token Perro: " + data.token);
+                        localStorage.setItem('token', data.token);
+                    }
+                    else {
+                        alert("usuario invalido :c")
+                    }
                 });
 
             })
@@ -47,16 +53,16 @@ class Submit extends Component {
         ;
     }
     registrar = () => {
-        const { username, password,password2, email ,dni } = this.props
+        const { username, password, password2, email, dni } = this.props
         console.log(this.props)
-        if(password !== password2){
+        if (password !== password2) {
             alert("Las contraseñas no coinciden")
-            return ;
+            return;
         }
         fetch('http://127.0.0.1:420/register', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'        
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 credentials: {
@@ -79,7 +85,7 @@ class Submit extends Component {
             });
         ;
     }
-    buscar = () =>{ 
+    buscar = () => {
         const { username } = this.props
         const url = 'http://127.0.0.1:420/api/userfind';
         const tokeen = localStorage.getItem('token')
@@ -87,23 +93,24 @@ class Submit extends Component {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer '+(tokeen)
+                'Authorization': 'Bearer ' + (tokeen)
             },
-            body: JSON.stringify({               
+            body: JSON.stringify({
                 credentials: {
-                    username}
-            })            
+                    username
+                }
+            })
         })
             .then((response) => {
                 console.log(response)
-                response.json().then(function (data) {                   
-                        console.log(data)                    
+                response.json().then(function (data) {
+                    console.log(data)
                 });
-    
+
             })
-        ;
+            ;
     }
-    eliminar = () =>{
+    eliminar = () => {
         const { username } = this.props
         const url = 'http://127.0.0.1:420/api/userdelete';
         const tokeen = localStorage.getItem('token')
@@ -111,60 +118,64 @@ class Submit extends Component {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer '+(tokeen)
+                'Authorization': 'Bearer ' + (tokeen)
             },
-            body: JSON.stringify({               
+            body: JSON.stringify({
                 credentials: {
                     username
                 }
-            })            
+            })
         })
             .then((response) => {
                 console.log(response)
-                response.json().then(function (data) {                   
-                        console.log(data.ok)  
-                        if(data.ok>0){
-                            alert("El usuario "+username+" ah sido eliminado")
-                        }                  
+                response.json().then(function (data) {
+                    console.log(data.ok)
+                    if (data.ok > 0) {
+                        alert("El usuario " + username + " ah sido eliminado")
+                    }
                 });
-    
+
             })
-        ;
+            ;
     }
-    forgot = () =>{ 
+    forgot = () => {
         const { username } = this.props
-        console.log("Email: "+username)
+        console.log("Email: " + username)
         const url = 'http://127.0.0.1:420/forgot';
         fetch(url, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'                
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({               
+            body: JSON.stringify({
                 credentials: {
                     username
                 }
-            })            
+            })
         })
             .then((response) => {
                 console.log(response)
-                response.json().then(function (data) {       
-                    console.log(data)            
-                    if(data.ok>0){
+                response.json().then(function (data) {
+                    console.log(data)
+                    if (data.ok > 0) {
                         alert("La contraseña ah sido cambiada a su DNI :v")
-                        document.location.href= 'http://localhost:3000/login'; 
-                    }      
-                    else{
+                        document.location.href = 'http://localhost:3000/login';
+                    }
+                    else {
                         alert("Username/Email no encontrado")
-                    }             
+                    }
                 });
-    
+
             })
-        ;
+            ;
     }
     render() {
+
+        const estilo = {
+            'background-color': this.props.color
+        };
         return (
-            <button type="submit" class="boton centerMargin bordeRedondeados" onClick={this.submit}>{this.props.texto}</button>
+            <button styele={estilo} type="submit" class="boton centerMargin bordeRedondeados" onClick={this.submit}>{this.props.texto}</button>
         );
     }
 }
