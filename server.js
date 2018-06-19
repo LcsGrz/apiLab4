@@ -45,6 +45,7 @@ app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token 
         }
       }
     }, (err, result) => {
+      console.log(result.permisos[0]["GET"])
       if (result === null)
         return next("NoTokenNoCollection")
       for (let index = 0; index < result.permisos.length; index++) {
@@ -128,7 +129,7 @@ const CrearToken = (result, tiempo, res) => {
 app.post("/forgot", (req, res, next) => {
   if (!("credentials" in req.body))
     throw "NoCredentials"
-
+  console.log(req.body)
   db.collection("usuarios").findOne(Usuario(req.body.credentials.username), (err, result) => {
     if (err) {
       console.log(err)
@@ -293,7 +294,6 @@ app.get("/api/:collection", (req, res, next) => {
 function Transformador(o) {
   /* Object.keys(o).length === 1 --> verifica que solo venga una clave en el objeto
                                   eso es por que todas las claves especiales de mongo van unicas y empiezan con $
-
   Object.keys(o)[0][0] === "$" --> clave unica empieza con $ */
   const claves = Object.keys(o)
   if ((claves.length === 1) && (claves[0][0] === "$")) {
