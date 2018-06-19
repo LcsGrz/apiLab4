@@ -43,6 +43,7 @@ class Submit extends Component {
     }
     registrar = () => {
         const { username, password,password2, email ,dni } = this.props
+        console.log(this.props)
         if(password !== password2){
             alert("Las contraseñas no coinciden")
             return ;

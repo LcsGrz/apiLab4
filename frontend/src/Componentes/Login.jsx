@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import TextBox from './textBoxP';
 import Submit from './submit';
-import Link from './Link';
 import './basico.css'
 import logo from '../Imagenes/NUBE.png';
-import Tilt from 'react-tilt'
+import Tilt from 'react-tilt' //movimiento de la imagen arreglar con nuevos CSS agregados para despues
+import { Link } from "react-router-dom";
 class formulario extends Component {
     constructor(props) {
         super(props)
@@ -44,9 +44,9 @@ class formulario extends Component {
                     <TextBox type="password" placeholder="Password" img="pass" colorF="green" colorT="red" get={this.getpassword} />
                     <Submit texto="Login" username={this.state.username} password={this.state.password} />
                     <div class="centrado">
-                        <Link url="registar" texto="Create Account" />
+                        <Link to={ '/register' }>Create Account</Link>
                         <p> / </p>
-                        <Link url="url" texto="Forgot?" />
+                        <Link to={ '/forgot' }>Forgot</Link>
                     </div>
                 </div>
             </div>

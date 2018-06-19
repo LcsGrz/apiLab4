@@ -27,11 +27,7 @@ class Roles extends Component {
             response.json().then(function (data) {
                 data.result.map((rol,index)=>{
                     console.log(rol)
-                    return(
-                        <li key={index}>
-                            {rol}
-                        </li>
-                    )
+                    //Agregar lo de joa
             });
     
         })
