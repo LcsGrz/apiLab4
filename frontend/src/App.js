@@ -12,7 +12,7 @@ class App extends Component {
           
           <Route exact path="/" component={Login} />
           <Route path="/register" component={Registrar} />
-          <Route path="/Home" component={Usuario} />
+          <Route path="/Home" component={Home} />
           <Route path="/admin" component={Abm} />
         </div>
       </Router>
@@ -27,6 +27,7 @@ const estilo = {
 const Home = () => (
   <div>
     <h2 style={estilo}>React App - ApiLab4</h2>
+    <Usuario />
   </div>
 );
 
