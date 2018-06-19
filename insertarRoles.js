@@ -12,18 +12,19 @@ MongoClient.connect(url, (err, client) => {
   let db = client.db(dbName)
 
   db.collection("roles").insert({
-    "usuario": [{
-      "pullers": {
-        "GET": true,
-        "POST": true,
-        "PUT": true,
-        "DELETE": false,
-        "PATCH": false
-      }
-    }]
+    "nombre": "admin"
   })
+
   db.collection("roles").insert({
-    "admin": []
+    "nombre": "usuario",
+    "permisos": [{
+      "collection": "pullers",
+      "GET": true,
+      "POST": false,
+      "PUT": false,
+      "DELETE": false,
+      "PATCH": true
+    }]
   })
 
   db.collection("usuarios").insert({
