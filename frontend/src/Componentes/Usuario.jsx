@@ -61,7 +61,7 @@ const NavBar = () => (
   const Sector = ({ match }) => (
     <div>
         <h1>{match.params.collection}</h1>
-        <Page coleccion={match.params.collection} />
+        <Page coleccion={match.params.collection}/>
     </div>
   );
 

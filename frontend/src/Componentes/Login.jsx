@@ -46,7 +46,7 @@ class formulario extends Component {
                     <div class="centrado">
                         <Link to={ '/register' }>Create Account</Link>
                         <p> / </p>
-                        <Link to={ '/forgot' }>Forgot</Link>
+                        <Link to={ '/forgot' }>Forgot your password?</Link>
                     </div>
                 </div>
             </div>

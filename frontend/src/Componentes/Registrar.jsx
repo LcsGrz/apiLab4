@@ -51,7 +51,7 @@ class formulario extends Component {
             <TextBox type="text" placeholder="Username" img="user" name="credentials.user" get={this.getusername} />
             <TextBox type="password" placeholder="Password" img="pass" colorF="green" colorT="red" get={this.getpassword} />
             <TextBox type="password" placeholder="Confirm Password" img="pass" colorF="green" colorT="red" get={this.getpassword2} />
-
+            <Submit texto="Back"/>
             <Submit texto="Create Account" username={this.state.username} password={this.state.password} password2={this.state.password2} email={this.state.email} dni={this.state.dni}/>
         </div>
       </div>
