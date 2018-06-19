@@ -27,8 +27,15 @@ class textBoxP extends Component {
   }
 
   render() {
+    
+    const estilo = {
+            
+          
+    };
+    
     return (
       <input 
+        style={estilo}
         type={this.props.type}
         class="user centerMargin bordeRedondeados"
         value={this.state.value} 

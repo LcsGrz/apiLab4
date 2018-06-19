@@ -12,7 +12,12 @@ class Submit extends Component {
             case 'Find': return this.buscar();
             case 'Delete': return this.eliminar();
             case 'Update': return this.eliminar();
+            case 'Accept': return this.forgot();  
+            case 'Back': return this.back();
         }
+    }
+    back = ()=> {
+        document.location.href= 'http://localhost:3000/login'; 
     }
     login = () =>{      
         const { username, password } = this.props
@@ -43,6 +48,7 @@ class Submit extends Component {
     }
     registrar = () => {
         const { username, password,password2, email ,dni } = this.props
+        console.log(this.props)
         if(password !== password2){
             alert("Las contraseñas no coinciden")
             return ;
@@ -120,6 +126,37 @@ class Submit extends Component {
                         if(data.ok>0){
                             alert("El usuario "+username+" ah sido eliminado")
                         }                  
+                });
+    
+            })
+        ;
+    }
+    forgot = () =>{ 
+        const { username } = this.props
+        console.log("Email: "+username)
+        const url = 'http://127.0.0.1:420/forgot';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'                
+            },
+            body: JSON.stringify({               
+                credentials: {
+                    username
+                }
+            })            
+        })
+            .then((response) => {
+                console.log(response)
+                response.json().then(function (data) {       
+                    console.log(data)            
+                    if(data.ok>0){
+                        alert("La contraseña ah sido cambiada a su DNI :v")
+                        document.location.href= 'http://localhost:3000/login'; 
+                    }      
+                    else{
+                        alert("Username/Email no encontrado")
+                    }             
                 });
     
             })

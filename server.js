@@ -129,7 +129,7 @@ const CrearToken = (result, tiempo, res) => {
 app.post("/forgot", (req, res, next) => {
   if (!("credentials" in req.body))
     throw "NoCredentials"
-  console.log(req.body)
+
   db.collection("usuarios").findOne(Usuario(req.body.credentials.username), (err, result) => {
     if (err) {
       console.log(err)

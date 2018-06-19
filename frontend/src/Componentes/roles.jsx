@@ -16,6 +16,11 @@ class Roles extends Component {
     login = () =>{     
         const url = 'http://127.0.0.1:420/api/roles';
         const tokeen = localStorage.getItem('token')
+        console.log("Token : "+tokeen)
+        if(tokeen===null){
+            alert("no se encuentra logeado")
+            return  document.location.href= 'http://localhost:3000/login'; 
+        }
         fetch(url, {
             method: 'GET',
             headers: {
@@ -27,11 +32,7 @@ class Roles extends Component {
             response.json().then(function (data) {
                 data.result.map((rol,index)=>{
                     console.log(rol)
-                    return(
-                        <li key={index}>
-                            {rol}
-                        </li>
-                    )
+                    //Agregar lo de joa
             });
     
         })
