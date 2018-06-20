@@ -21,9 +21,10 @@ class formulario extends Component {
             <div class="divredondo centerMargin sombra bordeRedondeados">
                 <div class="centraVertical">   
 
-                    <TextBox type="Email" placeholder="Email" img="pass" colorF="green" colorT="red" get={this.getusername} />
-                    <Submit texto="Back"  />
+                    <TextBox type="text" placeholder="Nick / Email" img="pass" colorF="green" colorT="red" get={this.getusername} />
+                   
                     <Submit texto="Accept" username={this.state.username} />
+                    <Submit texto="Back"  color="red" />
                                         
                 </div>
             </div>
