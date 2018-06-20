@@ -36,7 +36,7 @@ app.use("/api/", expressJwt({
 
 app.use("/api/:collection", (req, res, next) => { //Verifica que tenga el token activo y si el rol pertenece donde quiere acceder
   let collection = req.params.collection
-  if (!(req.user.rol === "admin")) {
+  if (!(req.user.rol === "admin") && collection !== "userchangepass" && collection !== "findcollection") {
     db.collection("roles").findOne({
       "nombre": req.user.rol,
       permisos: {
@@ -129,7 +129,7 @@ const CrearToken = (result, tiempo, res) => {
 app.post("/forgot", (req, res, next) => {
   if (!("credentials" in req.body))
     throw "NoCredentials"
-
+  console.log(req.body)
   db.collection("usuarios").findOne(Usuario(req.body.credentials.username), (err, result) => {
     if (err) {
       console.log(err)
@@ -265,6 +265,30 @@ app.put("/modperm", (req, res) => {
 app.put("/delrol", (req, res) => db.collection("roles").deleteOne({
   nombre: req.body.nombre
 }, (err, result) => funkInter(res, err, result)))
+//--------------------------------------------------------------------------------------------Ver colecciones permitidas para el user
+app.get("/api/findcollection", (req, res) => {
+  console.log(req.user)
+  if (req.user === undefined)
+    throw "UnauthorizedError"
+  let c = new Array()
+  if (req.user.rol == "admin") {
+    db.listCollections().toArray((err, result) => {
+      result.map(x => c.push(x.name))
+      funkInter(res, err, c)
+    })
+  } else {
+    db.collection("roles").findOne({
+      "nombre": req.user.rol
+    }, (err, result) => {
+      console.log(result)
+      for (let index = 0; index < result.permisos.length; index++) {
+        if (result.permisos[index]["GET"])
+          c.push(result.permisos[index]["collection"])
+      }
+      funkInter(res, err, c)
+    })
+  }
+})
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------COLLECIONES
 //--------------------------------------------------------------------------------------------Ver
@@ -386,3 +410,11 @@ app.use((err, req, res, next) => { //Middleware que captura todas las excepcione
   if (err)
     res.send(errores[lang][err])
 })
+/*
+
+
+
+
+
+
+*/
